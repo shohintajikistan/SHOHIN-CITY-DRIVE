@@ -76,8 +76,11 @@ namespace SHOHIN.CityDrive
                 steeringResponse * Time.fixedDeltaTime);
 
             float speedFactor = Mathf.Clamp01(1f - SpeedKph / maxSpeedKph);
-            float driveTorque = throttle && !braking ? motorTorque * speedFactor : 0f;
-            float serviceBrake = braking ? brakeTorque : 0f;
+            bool reverse = braking && SpeedKph < 2.5f && !throttle;
+            float driveTorque = throttle && !braking
+                ? motorTorque * speedFactor
+                : reverse ? -motorTorque * 0.55f : 0f;
+            float serviceBrake = braking && !reverse ? brakeTorque : 0f;
 
             frontLeft.steerAngle = currentSteerAngle;
             frontRight.steerAngle = currentSteerAngle;
