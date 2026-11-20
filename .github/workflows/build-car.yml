@@ -1,0 +1,37 @@
+name: Build SHOHIN CAR GLB
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/build_car.py"
+      - ".github/workflows/build-car.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-glb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender
+          blender --version
+
+      - name: Build SHOHIN CAR model
+        run: |
+          blender --background --python scripts/build_car.py
+
+      - name: Upload GLB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shohin-car-glb
+          path: exports/shohin_car.glb
+          if-no-files-found: error
+          retention-days: 30
