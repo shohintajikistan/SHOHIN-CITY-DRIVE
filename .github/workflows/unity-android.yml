@@ -28,7 +28,7 @@ jobs:
           projectPath: UnityProject
           unityVersion: 6000.3.28f1
           targetPlatform: Android
-          customParameters: -executeMethod SHOHIN.Editor.SHOHINProjectBuilder.BuildAndroid
+          buildMethod: SHOHIN.Editor.SHOHINProjectBuilder.BuildAndroid
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
