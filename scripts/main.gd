@@ -90,14 +90,28 @@ func _box(pos: Vector3, size: Vector3, color: Color) -> void:
 
 func _make_car() -> void:
 	car = CharacterBody3D.new()
-	car.position = Vector3(0, 0.7, 24)
+	car.position = Vector3(0, 0.36, 24)
 	add_child(car)
 	var car_collision := CollisionShape3D.new()
 	var car_shape := BoxShape3D.new()
 	car_shape.size = Vector3(2.0, 1.4, 4.0)
 	car_collision.shape = car_shape
-	car_collision.position.y = 0.55
+	car_collision.position.y = 0.35
 	car.add_child(car_collision)
+
+	# Prefer the generated SHOHIN GLB when the Blender workflow has added it.
+	# Keep the procedural fallback below so the prototype still runs before the first build.
+	var model_path := "res://assets/models/shohin_car.glb"
+	if ResourceLoader.exists(model_path):
+		var model_scene := load(model_path) as PackedScene
+		if model_scene:
+			var car_model := model_scene.instantiate() as Node3D
+			if car_model:
+				car_model.name = "SHOHIN_CAR_MODEL"
+				car_model.position = Vector3(0, -0.36, 0)
+				car.add_child(car_model)
+				return
+
 	var body := MeshInstance3D.new()
 	var bm := BoxMesh.new()
 	bm.size = Vector3(2.0, 0.65, 4.0)
