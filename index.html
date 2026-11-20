@@ -148,6 +148,38 @@ for(const x of [-.48,.48]){
  const exhaust=addCarMesh(new THREE.CylinderGeometry(.105,.105,.18,16),rimMat,x,.48,1.98);
  exhaust.rotation.x=Math.PI/2;
 }
+// Realistic four-wheel assemblies: rubber tyres, alloy rims, spokes, brake discs and calipers.
+function makeWheel(x,z,front){
+ const pivot=new THREE.Group();pivot.position.set(x,.48,z);carBody.add(pivot);
+ const tire=new THREE.Mesh(new THREE.TorusGeometry(.365,.105,18,36),tireMat);
+ tire.rotation.y=Math.PI/2;pivot.add(tire);tire.castShadow=true;
+ const sidewall=new THREE.Mesh(new THREE.TorusGeometry(.285,.025,10,32),darkMat);
+ sidewall.rotation.y=Math.PI/2;sidewall.position.x=x>0?.018:-.018;pivot.add(sidewall);
+ const disc=new THREE.Mesh(new THREE.CylinderGeometry(.265,.265,.055,32),mat(0x858b8c,.32,.8));
+ disc.rotation.z=Math.PI/2;disc.position.x=x>0?-.015:.015;pivot.add(disc);
+ const rim=new THREE.Group();pivot.add(rim);
+ const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.245,.245,.075,32),rimMat);
+ barrel.rotation.z=Math.PI/2;rim.add(barrel);
+ const hub=new THREE.Mesh(new THREE.CylinderGeometry(.085,.085,.09,24),darkMat);
+ hub.rotation.z=Math.PI/2;rim.add(hub);
+ for(let i=0;i<10;i++){
+  const a=i*Math.PI/5;
+  const spoke=new THREE.Mesh(new THREE.BoxGeometry(.045,.205,.055),rimMat);
+  spoke.position.set(0,Math.cos(a)*.145,Math.sin(a)*.145);
+  spoke.rotation.x=a;rim.add(spoke);
+ }
+ const cap=new THREE.Mesh(new THREE.CylinderGeometry(.052,.052,.095,24),mat(0xbaf05b,.2,.7));
+ cap.rotation.z=Math.PI/2;rim.add(cap);
+ const caliper=new THREE.Mesh(new THREE.BoxGeometry(.105,.19,.105),mat(0xc53d31,.38,.35));
+ caliper.position.set(0,.17,.18);pivot.add(caliper);
+ wheelParts.push({pivot,tire,rim,front});
+}
+for(const x of [-.96,.96]){makeWheel(x,-1.28,true);makeWheel(x,1.28,false)}
+// Subtle wheel-arch lips and sculpted side skirts complete the sports-car silhouette.
+for(const x of [-1,1])for(const z of [-1.28,1.28]){
+ const arch=addCarMesh(new THREE.TorusGeometry(.405,.055,10,36,Math.PI),darkMat,x,.48,z);
+ arch.rotation.z=Math.PI;arch.rotation.y=Math.PI/2;
+}
 // Move the car geometry into a raised pivot so it rolls around its centre, not the ground.
 for(const part of carBody.children)part.position.y-=.55;
 carBody.position.y=.55;
