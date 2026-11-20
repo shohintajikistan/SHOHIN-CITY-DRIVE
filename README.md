@@ -13,7 +13,9 @@ SHOHIN CITY DRIVE is being rebuilt as a native Android 3D driving game.
 ## Current repository state
 The previous Babylon.js browser prototype and old Godot experiment have been removed from the active branch. The new Unity project lives in `UnityProject/`.
 
-The first editor-generated scene is a small procedural city blockout with a temporary physics test chassis, WheelColliders, a chase camera, speed HUD, and touch controls. **The temporary chassis is not a finished realistic car model.** A properly licensed detailed vehicle asset, sound, refined suspension/tire tuning, and production city art are still required.
+The Editor build script generates a starter scene: a small procedural city blockout, temporary physics test chassis, WheelColliders, chase camera, speed HUD, and touch controls. The scene has not yet been built or tested in Unity. **The temporary chassis is not a finished realistic car model.** A properly licensed detailed vehicle asset, sound, refined suspension/tire tuning, and production city art are still required.
+
+No APK has been built yet. Unity compilation and on-device testing are still pending.
 
 ## Build requirements
 Unity Personal is free if the account meets Unity's eligibility terms. GameCI requires a valid Unity Personal license and account credentials.
