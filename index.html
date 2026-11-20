@@ -180,6 +180,67 @@ for(const x of [-1,1])for(const z of [-1.28,1.28]){
  const arch=addCarMesh(new THREE.TorusGeometry(.405,.055,10,36,Math.PI),darkMat,x,.48,z);
  arch.rotation.z=Math.PI;arch.rotation.y=Math.PI/2;
 }
+// Premium GT 911 styling: sculpted bonnet, aerodynamic splitters, side blades and trim.
+const carbonMat=mat(0x111719,.34,.72),accentMat=mat(0xbaf05b,.3,.55);
+const hood=addCarMesh(new THREE.SphereGeometry(1,32,18),carPaint,0,.82,-1.23);
+hood.scale.set(.72,.105,.67);
+for(const x of [-.52,.52]){
+ const crease=addCarMesh(new THREE.BoxGeometry(.025,.025,1.02),mat(0x315b4c,.4,.35),x,.84,-1.18);
+ crease.rotation.y=x*.055;
+ const vent=addCarMesh(new THREE.BoxGeometry(.22,.035,.42),carbonMat,x*.95,.855,-1.52);
+ for(let n=0;n<3;n++){
+  const slit=addCarMesh(new THREE.BoxGeometry(.16,.018,.025),rimMat,x*.95,.878,-1.66+n*.09);
+ }
+}
+// Deep front splitter with corner canards and rear diffuser fins.
+addCarMesh(new THREE.BoxGeometry(2.02,.075,.34),carbonMat,0,.43,-2.04);
+for(const x of [-.86,.86]){
+ const canard=addCarMesh(new THREE.BoxGeometry(.24,.045,.48),carbonMat,x,.48,-1.82);
+ canard.rotation.y=x*.22;
+ const fin=addCarMesh(new THREE.BoxGeometry(.07,.15,.32),carbonMat,x,.42,1.91);
+}
+for(let i=-2;i<=2;i++){
+ const fin=addCarMesh(new THREE.BoxGeometry(.045,.16,.42),carbonMat,i*.27,.39,1.84);
+}
+// Sculpted side blades and lower door accent line.
+for(const x of [-1,1]){
+ const blade=addCarMesh(new THREE.BoxGeometry(.16,.12,1.65),carbonMat,x,.43,.08);
+ const line=addCarMesh(new THREE.BoxGeometry(.025,.035,1.25),accentMat,x*1.012,.62,.05);
+ const intakeFrame=addCarMesh(new THREE.BoxGeometry(.045,.29,.62),carPaint,x*1.04,.79,.94);
+ const intakeDark=addCarMesh(new THREE.BoxGeometry(.035,.19,.46),carbonMat,x*1.065,.78,.94);
+ for(let n=0;n<3;n++){
+  const fin=addCarMesh(new THREE.BoxGeometry(.025,.025,.36),rimMat,x*1.085,.73+n*.055,.94);
+ }
+}
+// Wide rear wing with curved-looking end plates and carbon supports.
+addCarMesh(new THREE.BoxGeometry(1.92,.095,.42),carbonMat,0,1.28,1.72);
+for(const x of [-.69,.69]){
+ const support=addCarMesh(new THREE.BoxGeometry(.075,.32,.13),carbonMat,x,1.12,1.62);
+ const endplate=addCarMesh(new THREE.BoxGeometry(.055,.24,.36),carPaint,x*1.38,1.28,1.72);
+}
+// Mirrors with dark bases, door handles and small side indicators.
+for(const x of [-1,1]){
+ const mirrorStem=addCarMesh(new THREE.BoxGeometry(.11,.11,.24),carbonMat,x*1.22,1.16,-.59);
+ const mirrorCap=addCarMesh(new THREE.SphereGeometry(.14,16,12),carPaint,x*1.34,1.23,-.62);
+ mirrorCap.scale.set(1,.65,1.25);
+ const indicator=addCarMesh(new THREE.BoxGeometry(.025,.035,.16),headMat,x*1.355,1.22,-.54);
+ const handle=addCarMesh(new THREE.BoxGeometry(.035,.045,.24),rimMat,x*1.01,.83,.28);
+}
+// Front Porsche-inspired light housings and a continuous rear light signature.
+for(const x of [-.67,.67]){
+ const bezel=addCarMesh(new THREE.SphereGeometry(.205,20,12),darkMat,x,.79,-1.84);
+ bezel.scale.set(1,.38,.48);
+ const led=addCarMesh(new THREE.BoxGeometry(.28,.035,.07),headMat,x,.82,-1.91);
+ const rearReflector=addCarMesh(new THREE.BoxGeometry(.32,.055,.045),tailMat,x,.85,1.91);
+}
+// Small premium details: badge, grille mesh, exhaust surrounds and brake ducts.
+addCarMesh(new THREE.BoxGeometry(.24,.035,.055),mat(0xe1c36b,.22,.8),0,.87,-1.96);
+addCarMesh(new THREE.BoxGeometry(.88,.12,.045),carbonMat,0,.54,-2.09);
+for(const x of [-.55,.55]){
+ const duct=addCarMesh(new THREE.BoxGeometry(.3,.13,.055),carbonMat,x,.59,-2.075);
+ const exhaustRing=addCarMesh(new THREE.CylinderGeometry(.12,.12,.04,20),rimMat,x,.48,2.04);
+ exhaustRing.rotation.x=Math.PI/2;
+}
 // Move the car geometry into a raised pivot so it rolls around its centre, not the ground.
 for(const part of carBody.children)part.position.y-=.55;
 carBody.position.y=.55;
