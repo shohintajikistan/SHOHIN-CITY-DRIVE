@@ -56,12 +56,11 @@ func _build_track() -> void:
 
 	_add_ribbon("Shoulders", ROAD_WIDTH + SHOULDER_WIDTH * 2.0, -0.08, Color(0.48, 0.49, 0.45), 1.0)
 	_add_ribbon("Asphalt", ROAD_WIDTH, 0.015, Color(0.105, 0.12, 0.125), 0.96)
-	_add_ribbon("Outer edge line", ROAD_WIDTH - 0.45, 0.035, Color(0.88, 0.88, 0.81), 0.8, true)
-	_add_ribbon("Inner edge line", ROAD_WIDTH - 0.45, 0.035, Color(0.88, 0.88, 0.81), 0.8, false)
+	_add_edge_lines()
 	_add_center_dashes()
 	_add_barriers()
 
-func _add_ribbon(label: String, width: float, height: float, color: Color, roughness: float, edge_only: bool = false) -> void:
+func _add_ribbon(label: String, width: float, height: float, color: Color, roughness: float) -> void:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in range(SEGMENTS):
@@ -74,20 +73,17 @@ func _add_ribbon(label: String, width: float, height: float, color: Color, rough
 		var right0 := p0 - side * width * 0.5
 		var left1 := p1 + side * width * 0.5
 		var right1 := p1 - side * width * 0.5
-		if edge_only:
-			# Thin continuous edge strips are drawn separately below.
-			continue
+		# Counter-clockwise winding keeps the road surface normals facing upward.
 		st.set_uv(Vector2(0.0, float(i) / 8.0)); st.add_vertex(left0 + Vector3.UP * height)
+		st.set_uv(Vector2(1.0, float(i + 1) / 8.0)); st.add_vertex(right1 + Vector3.UP * height)
 		st.set_uv(Vector2(1.0, float(i) / 8.0)); st.add_vertex(right0 + Vector3.UP * height)
-		st.set_uv(Vector2(1.0, float(i + 1) / 8.0)); st.add_vertex(right1 + Vector3.UP * height)
 		st.set_uv(Vector2(0.0, float(i) / 8.0)); st.add_vertex(left0 + Vector3.UP * height)
-		st.set_uv(Vector2(1.0, float(i + 1) / 8.0)); st.add_vertex(right1 + Vector3.UP * height)
 		st.set_uv(Vector2(0.0, float(i + 1) / 8.0)); st.add_vertex(left1 + Vector3.UP * height)
+		st.set_uv(Vector2(1.0, float(i + 1) / 8.0)); st.add_vertex(right1 + Vector3.UP * height)
 	st.generate_normals()
-	var mesh := st.commit()
 	var surface := MeshInstance3D.new()
 	surface.name = label
-	surface.mesh = mesh
+	surface.mesh = st.commit()
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = roughness
@@ -96,6 +92,26 @@ func _add_ribbon(label: String, width: float, height: float, color: Color, rough
 	add_child(surface)
 	if label == "Asphalt":
 		surface.create_trimesh_collision()
+
+func _add_edge_lines() -> void:
+	var paint := StandardMaterial3D.new()
+	paint.albedo_color = Color(0.91, 0.91, 0.84)
+	paint.roughness = 0.82
+	for i in range(SEGMENTS):
+		var p0 := road_points[i]
+		var p1 := road_points[(i + 1) % SEGMENTS]
+		var tangent := (p1 - p0).normalized()
+		var side := Vector3(-tangent.z, 0.0, tangent.x)
+		for sign in [-1.0, 1.0]:
+			var line := MeshInstance3D.new()
+			var mesh := BoxMesh.new()
+			mesh.size = Vector3(0.13, 0.035, p0.distance_to(p1) + 0.08)
+			line.mesh = mesh
+			var center := (p0 + p1) * 0.5 + side * sign * (ROAD_WIDTH * 0.5 - 0.22)
+			line.position = Vector3(center.x, 0.055, center.z)
+			line.look_at(Vector3(p1.x + side.x * sign, 0.055, p1.z + side.z * sign), Vector3.UP)
+			line.material_override = paint
+			add_child(line)
 
 func _add_center_dashes() -> void:
 	var paint := StandardMaterial3D.new()
@@ -109,8 +125,8 @@ func _add_center_dashes() -> void:
 		var box := BoxMesh.new()
 		box.size = Vector3(0.16, 0.035, p0.distance_to(p1) * 0.48)
 		dash.mesh = box
-		dash.position = Vector3(mid.x, 0.055, mid.z)
-		dash.look_at(Vector3(p1.x, 0.055, p1.z), Vector3.UP)
+		dash.position = Vector3(mid.x, 0.06, mid.z)
+		dash.look_at(Vector3(p1.x, 0.06, p1.z), Vector3.UP)
 		dash.material_override = paint
 		add_child(dash)
 
@@ -153,7 +169,6 @@ func _add_barriers() -> void:
 				var stripe_mesh := BoxMesh.new()
 				stripe_mesh.size = Vector3(0.44, 0.12, maxf(0.7, length * 0.25))
 				stripe.mesh = stripe_mesh
-				stripe.position = Vector3(0.0, 0.0, 0.0)
 				stripe.material_override = stripe_material
 				wall.add_child(stripe)
 
