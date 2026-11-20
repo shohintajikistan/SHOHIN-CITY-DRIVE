@@ -13,10 +13,10 @@
 </style>
 </head>
 <body><div id="game"></div>
-<div class="hud"><div><div class="brand">♛ SHOHIN</div><div class="sub">CITY DRIVE · REALISTIC SIMULATOR</div></div><div class="stats"><div class="stat"><div class="value" id="speed">0</div><div class="label">KM/H</div></div><div class="stat"><div class="value" id="gear">N</div><div class="label">GEAR</div></div><div class="stat"><div class="value" id="driftScore">0</div><div class="label">DRIFT</div></div></div></div>
+<div class="hud"><div><div class="brand">♛ SHOHIN</div><div class="sub">GT 911 · CITY DRIVE</div></div><div class="stats"><div class="stat"><div class="value" id="speed">0</div><div class="label">KM/H</div></div><div class="stat"><div class="value" id="gear">N</div><div class="label">GEAR</div></div><div class="stat"><div class="value" id="driftScore">0</div><div class="label">DRIFT</div></div></div></div>
 <button class="topbtn second" id="pause">Ⅱ ПАУЗА</button><button class="topbtn" id="cameraBtn">КАМЕРА</button><div id="drift">DRIFT!</div>
 <div class="controls"><div class="cluster"><button class="key" data-key="left">◀</button><button class="key" data-key="right">▶</button></div><div class="cluster"><button class="key hand" data-key="hand">РУЧНИК</button><button class="key" data-key="brake">ТОРМОЗ</button><button class="key gas" data-key="gas">ГАЗ ▲</button></div></div>
-<div id="menu"><div class="panel"><div class="crown">♛</div><h1>SHOHIN CITY DRIVE</h1><div class="sub">OPEN CITY · DRIFT · PARKING</div><p>Свободное вождение по городу. Разгоняйся, проходи повороты в заносе и проверяй управление автомобилем.</p><div class="garage"><button class="carpick active" data-car="0">SPORT<br>GREEN</button><button class="carpick" data-car="1">SPORT<br>RED</button><button class="carpick" data-car="2">SPORT<br>BLUE</button></div><button class="primary" id="start">НАЧАТЬ ВОЖДЕНИЕ</button><p class="note">3D CITY · TOUCH CONTROL · FREE DRIVE</p></div></div>
+<div id="menu"><div class="panel"><div class="crown">♛</div><h1>SHOHIN CITY DRIVE</h1><div class="sub">OPEN CITY · DRIFT · PARKING</div><p>Свободное вождение по городу. Разгоняйся, проходи повороты в заносе и проверяй управление автомобилем.</p><div class="garage"><button class="carpick active" data-car="0">GT 911<br>GREEN</button><button class="carpick" data-car="1">GT 911<br>RED</button><button class="carpick" data-car="2">GT 911<br>BLUE</button></div><button class="primary" id="start">НАЧАТЬ ВОЖДЕНИЕ</button><p class="note">3D CITY · TOUCH CONTROL · FREE DRIVE</p></div></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -78,7 +78,7 @@ for(let i=0;i<100;i++){const x=(rnd()-.5)*360,z=(rnd()-.5)*360;if(roads.some(v=>
  const t=new THREE.Mesh(new THREE.CylinderGeometry(.18,.25,2.8,8),trunk);t.position.set(x,1.4,z);t.castShadow=true;scene.add(t);
  const crown=new THREE.Mesh(new THREE.SphereGeometry(1.65,12,9),leaf);crown.scale.set(1,1.25,1);crown.position.set(x,3.4,z);crown.castShadow=true;scene.add(crown);
 }
-// Smooth road-going sports car with curved bodywork, glass cabin and detailed wheels.
+// Custom GT 911-style rear-engine sports coupe with rounded nose, sloping fastback roof and wide rear haunches.
 const colors=[0x087b53,0xc83229,0x2459a8];let selected=0,carPaint=mat(colors[0],.24,.62);
 const tireMat=mat(0x111416,.94),rimMat=mat(0xb9c2c3,.25,.82),darkMat=mat(0x171d20,.4,.35);
 const glassMat=new THREE.MeshPhysicalMaterial({color:0x83aeb9,metalness:.55,roughness:.12,transmission:.12,transparent:true,opacity:.9});
@@ -87,34 +87,66 @@ const tailMat=new THREE.MeshStandardMaterial({color:0xff2525,emissive:0xc90000,e
 const car=new THREE.Group();scene.add(car);const carBody=new THREE.Group();car.add(carBody);const wheelParts=[];let rollX=0,rollZ=0,rollVelX=0,rollVelZ=0;
 function addCarMesh(g,m,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;carBody.add(o);return o}
 function carShape(points,depth,bevel){const s=new THREE.Shape();s.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)s.lineTo(points[i][0],points[i][1]);s.closePath();const g=new THREE.ExtrudeGeometry(s,{depth,bevelEnabled:true,bevelSegments:4,steps:1,bevelSize:bevel,bevelThickness:bevel});g.translate(0,0,-depth/2);g.rotateX(Math.PI/2);return g}
-const bodyShape=[[-.91,-1.95],[.91,-1.95],[1.02,-1.42],[.94,-.82],[.82,.92],[.66,1.65],[-.66,1.65],[-.82,.92],[-.94,-.82],[-1.02,-1.42]];
-const body=addCarMesh(carShape(bodyShape,.62,.09),carPaint,0,.76,0);
-addCarMesh(new THREE.BoxGeometry(1.7,.13,2.45),darkMat,0,.56,0);
-const cabinShape=[[-.68,-.92],[.68,-.92],[.62,-.42],[.52,.78],[-.52,.78],[-.62,-.42]];
-addCarMesh(carShape(cabinShape,.48,.055),glassMat,0,1.17,-.02);
-addCarMesh(new THREE.BoxGeometry(1.45,.08,.12),darkMat,0,1.53,-.04);
-for(const x of [-.87,.87]){
- const mirror=addCarMesh(new THREE.SphereGeometry(.14,12,10),carPaint,x,1.08,-.62);mirror.scale.set(1,.7,1.35);
- const sill=addCarMesh(new THREE.BoxGeometry(.16,.16,1.8),darkMat,x,.52,.12);
+// GT 911 body: rounded front, wide rear haunches and a low fastback roof.
+function roundedPlan(points,depth,bevel){
+ const sh=new THREE.Shape();sh.moveTo(points[0][0],points[0][1]);
+ for(let i=1;i<points.length;i++)sh.lineTo(points[i][0],points[i][1]);
+ sh.closePath();
+ const g=new THREE.ExtrudeGeometry(sh,{depth,bevelEnabled:true,bevelSegments:5,steps:1,bevelSize:bevel,bevelThickness:bevel,curveSegments:10});
+ g.translate(0,0,-depth/2);g.rotateX(Math.PI/2);return g;
 }
-addCarMesh(new THREE.BoxGeometry(1.85,.16,.22),darkMat,0,.55,-1.91);
-addCarMesh(new THREE.BoxGeometry(1.65,.13,.2),darkMat,0,.52,1.75);
-for(const x of [-.69,.69]){
- const h=addCarMesh(new THREE.BoxGeometry(.42,.13,.12),headMat,x,.86,-1.91);h.rotation.y=x*.1;
- const t=addCarMesh(new THREE.BoxGeometry(.42,.14,.12),tailMat,x,.85,1.73);
- const exhaust=addCarMesh(new THREE.CylinderGeometry(.08,.08,.16,12),rimMat,x*.65,.43,1.84);exhaust.rotation.x=Math.PI/2;
+const bodyOutline=[
+ [0,-2.08],[.58,-2.02],[.82,-1.82],[.91,-1.45],[.96,-.95],
+ [1.02,-.25],[1.09,.72],[1.12,1.35],[.98,1.78],[.68,1.96],
+ [0,2.0],[-.68,1.96],[-.98,1.78],[-1.12,1.35],[-1.09,.72],
+ [-1.02,-.25],[-.96,-.95],[-.91,-1.45],[-.82,-1.82],[-.58,-2.02]
+];
+addCarMesh(roundedPlan(bodyOutline,.48,.12),carPaint,0,.72,0);
+// Lower dark diffuser and sculpted front/rear bumpers.
+addCarMesh(new THREE.BoxGeometry(1.82,.16,3.35),darkMat,0,.48,.05);
+addCarMesh(new THREE.BoxGeometry(1.86,.2,.22),carPaint,0,.66,-1.98);
+addCarMesh(new THREE.BoxGeometry(1.94,.2,.25),carPaint,0,.65,1.88);
+addCarMesh(new THREE.BoxGeometry(1.1,.16,.08),darkMat,0,.56,-2.08);
+addCarMesh(new THREE.BoxGeometry(1.35,.18,.12),darkMat,0,.47,2.0);
+// Sloping 911 fastback cabin: domed glass canopy and dark window surrounds.
+const cabinBase=addCarMesh(new THREE.BoxGeometry(1.52,.12,2.12),darkMat,0,1.02,-.02);
+const canopy=addCarMesh(new THREE.SphereGeometry(1,32,20),glassMat,0,1.26,-.02);
+canopy.scale.set(.73,.42,1.12);
+const roof=addCarMesh(new THREE.SphereGeometry(1,24,16),carPaint,0,1.57,.03);
+roof.scale.set(.56,.12,.72);
+// Windscreen and rear glass as sloped panels.
+const windscreen=addCarMesh(new THREE.BoxGeometry(1.27,.055,.58),glassMat,0,1.37,-.72);
+windscreen.rotation.x=-.42;
+const rearGlass=addCarMesh(new THREE.BoxGeometry(1.22,.055,.52),glassMat,0,1.36,.77);
+rearGlass.rotation.x=.43;
+// Side window pillars, mirrors and low side skirts.
+for(const x of [-.7,.7]){
+ const pillar=addCarMesh(new THREE.BoxGeometry(.075,.48,1.55),darkMat,x,1.35,.02);
+ pillar.rotation.x=x>0?0:0;
+ const mirror=addCarMesh(new THREE.BoxGeometry(.23,.13,.32),carPaint,x*1.28,1.22,-.62);
+ const sill=addCarMesh(new THREE.BoxGeometry(.13,.2,2.05),darkMat,x,.5,.05);
+ // Rear quarter air intake, a signature detail of a mid/rear-engine performance coupe.
+ const intake=addCarMesh(new THREE.BoxGeometry(.055,.22,.52),darkMat,x*1.36,.78,.93);
 }
-const grille=addCarMesh(new THREE.BoxGeometry(.78,.23,.06),darkMat,0,.65,-1.96);
-const spoiler=addCarMesh(new THREE.BoxGeometry(1.8,.08,.35),darkMat,0,1.12,1.66);
-for(const x of [-.68,.68]){const support=addCarMesh(new THREE.BoxGeometry(.07,.32,.08),rimMat,x,1.0,1.62)}
-for(const x of [-1.02,1.02])for(const z of [-1.25,1.25]){
- const pivot=new THREE.Group();pivot.position.set(x,.47,z);carBody.add(pivot);
- const tire=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,.29,32),tireMat);tire.rotation.z=Math.PI/2;tire.castShadow=true;pivot.add(tire);
- const rim=new THREE.Mesh(new THREE.CylinderGeometry(.29,.29,.305,32),rimMat);rim.rotation.z=Math.PI/2;pivot.add(rim);
- const hub=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.32,20),darkMat);hub.rotation.z=Math.PI/2;pivot.add(hub);
- for(let k=0;k<10;k++){const spoke=new THREE.Mesh(new THREE.BoxGeometry(.045,.46,.055),rimMat);spoke.position.set(0,0,0);spoke.rotation.x=k*Math.PI/5;pivot.add(spoke)}
- const ring=new THREE.Mesh(new THREE.TorusGeometry(.34,.035,8,32),darkMat);ring.rotation.y=Math.PI/2;pivot.add(ring);
- wheelParts.push({pivot,tire,rim,front:z<0});
+// Round LED-style headlights, front indicators and full-width rear light bar.
+for(const x of [-.68,.68]){
+ const lamp=addCarMesh(new THREE.CylinderGeometry(.17,.17,.07,24),headMat,x,.76,-1.91);
+ lamp.rotation.x=Math.PI/2;
+ const inner=addCarMesh(new THREE.CylinderGeometry(.095,.095,.075,20),mat(0xffffff,.18),x,.76,-1.94);
+ inner.rotation.x=Math.PI/2;
+ const tail=addCarMesh(new THREE.BoxGeometry(.42,.12,.07),tailMat,x,.78,1.91);
+}
+addCarMesh(new THREE.BoxGeometry(1.55,.11,.07),tailMat,0,.79,1.91);
+// Rear engine cover vents and GT-style fixed rear wing.
+for(let i=0;i<7;i++){
+ const vent=addCarMesh(new THREE.BoxGeometry(.92,.035,.045),darkMat,0,.98,1.02+i*.085);
+}
+addCarMesh(new THREE.BoxGeometry(1.86,.1,.36),darkMat,0,1.16,1.72);
+for(const x of [-.68,.68])addCarMesh(new THREE.BoxGeometry(.09,.32,.12),rimMat,x,1.0,1.61);
+// Twin exhaust outlets.
+for(const x of [-.48,.48]){
+ const exhaust=addCarMesh(new THREE.CylinderGeometry(.105,.105,.18,16),rimMat,x,.48,1.98);
+ exhaust.rotation.x=Math.PI/2;
 }
 // Move the car geometry into a raised pivot so it rolls around its centre, not the ground.
 for(const part of carBody.children)part.position.y-=.55;
