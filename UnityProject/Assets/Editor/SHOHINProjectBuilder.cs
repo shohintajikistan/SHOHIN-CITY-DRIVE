@@ -93,6 +93,9 @@ namespace SHOHIN.Editor
 
         private static void BuildLighting()
         {
+            Time.fixedDeltaTime = 0.02f;
+            Physics.defaultSolverIterations = 12;
+            Physics.defaultSolverVelocityIterations = 4;
             RenderSettings.ambientMode = AmbientMode.Trilight;
             RenderSettings.ambientSkyColor = new Color(0.31f, 0.39f, 0.46f);
             RenderSettings.ambientEquatorColor = new Color(0.17f, 0.20f, 0.19f);
@@ -116,9 +119,9 @@ namespace SHOHIN.Editor
                 CreatePrimitive("Road North-South", PrimitiveType.Cube, new Vector3(p, 0f, 0f), new Vector3(9f, 0.12f, extent), asphalt);
                 CreatePrimitive("Road East-West", PrimitiveType.Cube, new Vector3(0f, 0.01f, p), new Vector3(extent, 0.12f, 9f), asphalt);
                 for (int z = -100; z <= 100; z += 12)
-                    CreatePrimitive("Road Dash", PrimitiveType.Cube, new Vector3(p, 0.071f, z), new Vector3(0.12f, 3.2f, 0.55f), lanePaint);
+                    CreateVisual("Road Dash", PrimitiveType.Cube, new Vector3(p, 0.071f, z), new Vector3(0.12f, 3.2f, 0.55f), lanePaint);
                 for (int x = -100; x <= 100; x += 12)
-                    CreatePrimitive("Road Dash", PrimitiveType.Cube, new Vector3(x, 0.072f, p), new Vector3(3.2f, 0.12f, 0.55f), lanePaint);
+                    CreateVisual("Road Dash", PrimitiveType.Cube, new Vector3(x, 0.072f, p), new Vector3(3.2f, 0.12f, 0.55f), lanePaint);
             }
 
             var random = new System.Random(42);
@@ -135,7 +138,7 @@ namespace SHOHIN.Editor
                     float d = 6f + (float)random.NextDouble() * 5f;
                     float h = 7f + (float)random.NextDouble() * 20f;
                     var building = CreatePrimitive("City Blockout Building", PrimitiveType.Cube,
-                        new Vector3(x, h * 0.5f, z), new Vector3(w, h, d), concrete);
+                        new Vector3(x, h * 0.5f - 0.12f, z), new Vector3(w, h, d), concrete);
                     building.transform.rotation = Quaternion.Euler(0f, random.Next(0, 4) * 90f, 0f);
                 }
             }
@@ -147,12 +150,12 @@ namespace SHOHIN.Editor
             root.transform.position = new Vector3(0f, 0.34f, -12f);
             var rb = root.AddComponent<Rigidbody>();
             rb.mass = 1450f;
-            rb.drag = 0.015f;
+            rb.linearDamping = 0.015f;
             rb.angularDamping = 0.55f;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             var chassis = root.AddComponent<BoxCollider>();
-            chassis.size = new Vector3(1.78f, 0.62f, 4.1f);
+            chassis.size = new Vector3(1.55f, 0.62f, 4.1f);
             chassis.center = new Vector3(0f, 0.15f, 0f);
 
             CreatePrimitiveChild(root.transform, "Temporary Chassis", PrimitiveType.Cube,
@@ -189,7 +192,6 @@ namespace SHOHIN.Editor
 
                 var visual = CreatePrimitiveChild(root.transform, "Wheel Visual " + i, PrimitiveType.Cylinder,
                     positions[i], new Vector3(0.34f, 0.13f, 0.34f), rubber);
-                visual.localRotation = Quaternion.Euler(0f, 0f, 90f);
                 visuals[i] = visual.transform;
             }
 
@@ -288,6 +290,14 @@ namespace SHOHIN.Editor
             text.color = new Color(0.82f, 1f, 0.9f);
             var textRect = text.GetComponent<RectTransform>();
             textRect.offsetMin = Vector2.zero; textRect.offsetMax = Vector2.zero;
+        }
+
+        private static GameObject CreateVisual(string name, PrimitiveType type, Vector3 position, Vector3 scale, Material material)
+        {
+            var go = CreatePrimitive(name, type, position, scale, material);
+            Collider collider = go.GetComponent<Collider>();
+            if (collider != null) Object.DestroyImmediate(collider);
+            return go;
         }
 
         private static GameObject CreatePrimitive(string name, PrimitiveType type, Vector3 position, Vector3 scale, Material material)
