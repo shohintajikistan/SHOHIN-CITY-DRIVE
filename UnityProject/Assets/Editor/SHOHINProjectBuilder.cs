@@ -144,7 +144,7 @@ namespace SHOHIN.Editor
         private static VehicleController BuildVehicle()
         {
             var root = new GameObject("SHOHIN Test Vehicle - replace visuals with licensed car model");
-            root.transform.position = new Vector3(0f, 0.28f, -12f);
+            root.transform.position = new Vector3(0f, 0.34f, -12f);
             var rb = root.AddComponent<Rigidbody>();
             rb.mass = 1450f;
             rb.drag = 0.015f;
@@ -164,8 +164,8 @@ namespace SHOHIN.Editor
             Transform[] visuals = new Transform[4];
             Vector3[] positions =
             {
-                new Vector3(-0.88f, 0.35f, 1.35f), new Vector3(0.88f, 0.35f, 1.35f),
-                new Vector3(-0.88f, 0.35f, -1.35f), new Vector3(0.88f, 0.35f, -1.35f)
+                new Vector3(-0.88f, 0f, 1.35f), new Vector3(0.88f, 0f, 1.35f),
+                new Vector3(-0.88f, 0f, -1.35f), new Vector3(0.88f, 0f, -1.35f)
             };
             for (int i = 0; i < 4; i++)
             {
