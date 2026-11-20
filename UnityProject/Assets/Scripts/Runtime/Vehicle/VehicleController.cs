@@ -42,7 +42,7 @@ namespace SHOHIN.CityDrive
         {
             body = GetComponent<Rigidbody>();
             body.mass = 1450f;
-            body.centerOfMass = new Vector3(0f, -0.42f, 0.05f);
+            body.centerOfMass = new Vector3(0f, 0.18f, 0.05f);
             body.interpolation = RigidbodyInterpolation.Interpolate;
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         }
