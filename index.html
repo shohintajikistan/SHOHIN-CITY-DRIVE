@@ -116,6 +116,9 @@ for(const x of [-1.02,1.02])for(const z of [-1.25,1.25]){
  const ring=new THREE.Mesh(new THREE.TorusGeometry(.34,.035,8,32),darkMat);ring.rotation.y=Math.PI/2;pivot.add(ring);
  wheelParts.push({pivot,tire,rim,front:z<0});
 }
+// Move the car geometry into a raised pivot so it rolls around its centre, not the ground.
+for(const part of carBody.children)part.position.y-=.55;
+carBody.position.y=.55;
 // Player and driving physics.
 car.position.set(0,0,0);let heading=0,speed=0,slip=0,drift=0,started=false,paused=false,view=0,handbrake=false;
 const keys={left:false,right:false,gas:false,brake:false,hand:false};
@@ -165,18 +168,19 @@ function update(dt){
  if(Math.abs(rollX)<.012&&Math.abs(rollVelX)<.025){rollX=0;rollVelX=0}
  if(Math.abs(rollZ)<.012&&Math.abs(rollVelZ)<.025){rollZ=0;rollVelZ=0}
  carBody.rotation.set(rollX,0,rollZ);
+ carBody.position.y=Math.max(.55,Math.abs(Math.cos(rollX))*.47+Math.abs(Math.sin(rollX))*1.95+Math.abs(Math.sin(rollZ))*1.02+.04);
  for(const w of wheelParts){w.tire.rotation.x-=speed*dt/.43;w.rim.rotation.x-=speed*dt/.43;if(w.front)w.pivot.rotation.y=THREE.MathUtils.damp(w.pivot.rotation.y,steer*.43,9,dt)}
  const drifting=hand&&Math.abs(speed)>7&&Math.abs(steer)>.05;
  if(drifting){drift+=Math.abs(speed)*dt*2.2;driftTimer=.3;$('drift').style.opacity=1}else{driftTimer=Math.max(0,driftTimer-dt);if(driftTimer===0)$('drift').style.opacity=0}
  $('speed').textContent=Math.round(Math.abs(speed)*3.6);$('gear').textContent=speed<-.5?'R':Math.abs(speed)<.5?'N':speed<13?'1':speed<24?'2':speed<34?'3':'4';$('driftScore').textContent=Math.floor(drift);
 }
 function cameraUpdate(dt){
- const f=new THREE.Vector3(Math.sin(heading),0,-Math.cos(heading));
+ // Camera follows the car's position only. Its world orientation stays level while steering.
  let desired,target;
- if(view===0){desired=car.position.clone().addScaledVector(f,-8);desired.y+=4.1;target=car.position.clone().add(new THREE.Vector3(0,1.05,0))}
- else if(view===1){desired=car.position.clone().addScaledVector(f,-13);desired.y+=7.2;target=car.position.clone().add(new THREE.Vector3(0,.8,0))}
- else{desired=car.position.clone().addScaledVector(f,1.15);desired.y+=1.75;target=car.position.clone().addScaledVector(f,18);target.y=1.2}
- camera.position.lerp(desired,1-Math.exp(-4.2*dt));camera.lookAt(target);
+ if(view===0){desired=car.position.clone().add(new THREE.Vector3(0,4.1,8));target=car.position.clone().add(new THREE.Vector3(0,1.05,0))}
+ else if(view===1){desired=car.position.clone().add(new THREE.Vector3(0,7.2,13));target=car.position.clone().add(new THREE.Vector3(0,.8,0))}
+ else{desired=car.position.clone().add(new THREE.Vector3(0,1.75,-1.15));target=car.position.clone().add(new THREE.Vector3(0,1.2,-18))}
+ camera.position.lerp(desired,1-Math.exp(-4.2*dt));camera.up.set(0,1,0);camera.lookAt(target);
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);if(started&&!paused)update(dt);cameraUpdate(dt);renderer.render(scene,camera)}
 camera.position.set(0,5,11);camera.lookAt(0,0,0);animate();
