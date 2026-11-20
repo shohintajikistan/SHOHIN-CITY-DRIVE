@@ -107,7 +107,7 @@ func _add_edge_lines() -> void:
 			var mesh := BoxMesh.new()
 			mesh.size = Vector3(0.13, 0.035, p0.distance_to(p1) + 0.08)
 			line.mesh = mesh
-			var center := (p0 + p1) * 0.5 + side * sign * (ROAD_WIDTH * 0.5 - 0.22)
+			var center: Vector3 = (p0 + p1) * 0.5 + side * sign * (ROAD_WIDTH * 0.5 - 0.22)
 			line.position = Vector3(center.x, 0.055, center.z)
 			line.look_at(Vector3(p1.x + side.x * sign, 0.055, p1.z + side.z * sign), Vector3.UP)
 			line.material_override = paint
@@ -143,7 +143,7 @@ func _add_barriers() -> void:
 		var tangent := (next_p - p).normalized()
 		var side := Vector3(-tangent.z, 0.0, tangent.x)
 		for sign in [-1.0, 1.0]:
-			var midpoint := (p + next_p) * 0.5 + side * sign * (ROAD_WIDTH * 0.5 + SHOULDER_WIDTH * 0.72)
+			var midpoint: Vector3 = (p + next_p) * 0.5 + side * sign * (ROAD_WIDTH * 0.5 + SHOULDER_WIDTH * 0.72)
 			var length := p.distance_to(next_p) + 0.12
 			var wall := StaticBody3D.new()
 			var shape := CollisionShape3D.new()
