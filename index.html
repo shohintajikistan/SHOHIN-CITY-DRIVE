@@ -329,7 +329,7 @@ function update(dt){
 function cameraUpdate(dt){
  // Chase camera stays behind the car's actual heading and remains horizon-level.
  const forward=new THREE.Vector3(Math.sin(heading),0,-Math.cos(heading));
- const desired,target;
+ let desired,target;
  if(view===0){
   desired=car.position.clone().addScaledVector(forward,-8).add(new THREE.Vector3(0,3.7,0));
   target=car.position.clone().addScaledVector(forward,2).add(new THREE.Vector3(0,1.05,0));
