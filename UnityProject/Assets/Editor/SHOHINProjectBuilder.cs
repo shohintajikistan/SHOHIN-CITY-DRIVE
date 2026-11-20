@@ -52,8 +52,12 @@ namespace SHOHIN.Editor
             var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(SettingsPath + "/SHOHIN_URP.asset");
             if (pipeline == null)
             {
-                var renderer = ScriptableObject.CreateInstance<UniversalRendererData>();
-                AssetDatabase.CreateAsset(renderer, SettingsPath + "/SHOHIN_Renderer.asset");
+                var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(SettingsPath + "/SHOHIN_Renderer.asset");
+                if (renderer == null)
+                {
+                    renderer = ScriptableObject.CreateInstance<UniversalRendererData>();
+                    AssetDatabase.CreateAsset(renderer, SettingsPath + "/SHOHIN_Renderer.asset");
+                }
                 pipeline = UniversalRenderPipelineAsset.Create(renderer);
                 pipeline.name = "SHOHIN_URP";
                 AssetDatabase.CreateAsset(pipeline, SettingsPath + "/SHOHIN_URP.asset");
