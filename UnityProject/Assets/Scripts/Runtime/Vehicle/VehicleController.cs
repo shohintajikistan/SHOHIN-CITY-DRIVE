@@ -24,12 +24,14 @@ namespace SHOHIN.CityDrive
         [SerializeField, Range(15f, 42f)] private float maxSteerAngle = 30f;
         [SerializeField, Min(20f)] private float maxSpeedKph = 220f;
         [SerializeField] private float downforce = 45f;
+        [SerializeField] private float steeringResponse = 95f;
 
         [Header("HUD")]
         [SerializeField] private Text speedText;
 
         private Rigidbody body;
-        private float steering;
+        private float steeringInput;
+        private float currentSteerAngle;
         private bool throttle;
         private bool braking;
         private bool handbrake;
@@ -47,12 +49,6 @@ namespace SHOHIN.CityDrive
 
         private void Update()
         {
-            float keyboardSteer = Input.GetAxisRaw("Horizontal");
-            steering = Mathf.Abs(keyboardSteer) > 0.01f ? keyboardSteer : steering;
-            throttle |= Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
-            braking |= Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow);
-            handbrake |= Input.GetKey(KeyCode.Space);
-
             if (speedText != null)
                 speedText.text = Mathf.RoundToInt(SpeedKph).ToString("000") + " KM/H";
 
@@ -60,64 +56,38 @@ namespace SHOHIN.CityDrive
             UpdateWheelVisual(frontRight, frontRightVisual);
             UpdateWheelVisual(rearLeft, rearLeftVisual);
             UpdateWheelVisual(rearRight, rearRightVisual);
-
-            // Keyboard inputs are sampled each frame; touch buttons set their own values.
-            if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.UpArrow) && !TouchThrottle)
-                throttle = false;
-            if (!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.DownArrow) && !TouchBrake)
-                braking = false;
-            if (!Input.GetKey(KeyCode.Space) && !TouchHandbrake)
-                handbrake = false;
-            if (!TouchSteering)
-                steering = keyboardSteer;
         }
 
-        private bool TouchThrottle { get; set; }
-        private bool TouchBrake { get; set; }
-        private bool TouchHandbrake { get; set; }
-        private bool TouchSteering { get; set; }
-
-        public void SetThrottle(bool pressed)
-        {
-            TouchThrottle = pressed;
-            throttle = pressed || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
-        }
-
-        public void SetBrake(bool pressed)
-        {
-            TouchBrake = pressed;
-            braking = pressed || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow);
-        }
-
-        public void SetHandbrake(bool pressed)
-        {
-            TouchHandbrake = pressed;
-            handbrake = pressed || Input.GetKey(KeyCode.Space);
-        }
+        public void SetThrottle(bool pressed) => throttle = pressed;
+        public void SetBrake(bool pressed) => braking = pressed;
+        public void SetHandbrake(bool pressed) => handbrake = pressed;
 
         public void SetSteering(float value, bool pressed)
         {
-            TouchSteering = pressed;
-            if (pressed) steering = Mathf.Clamp(value, -1f, 1f);
-            else steering = Input.GetAxisRaw("Horizontal");
+            steeringInput = pressed ? Mathf.Clamp(value, -1f, 1f) : 0f;
         }
 
         private void FixedUpdate()
         {
+            currentSteerAngle = Mathf.MoveTowards(
+                currentSteerAngle,
+                steeringInput * maxSteerAngle,
+                steeringResponse * Time.fixedDeltaTime);
+
             float speedFactor = Mathf.Clamp01(1f - SpeedKph / maxSpeedKph);
-            float torque = throttle && !braking ? motorTorque * speedFactor : 0f;
-            float brake = braking ? brakeTorque : 0f;
+            float driveTorque = throttle && !braking ? motorTorque * speedFactor : 0f;
+            float serviceBrake = braking ? brakeTorque : 0f;
 
-            frontLeft.steerAngle = steering * maxSteerAngle;
-            frontRight.steerAngle = steering * maxSteerAngle;
+            frontLeft.steerAngle = currentSteerAngle;
+            frontRight.steerAngle = currentSteerAngle;
 
-            rearLeft.motorTorque = torque * 0.5f;
-            rearRight.motorTorque = torque * 0.5f;
+            rearLeft.motorTorque = driveTorque * 0.5f;
+            rearRight.motorTorque = driveTorque * 0.5f;
 
-            frontLeft.brakeTorque = brake;
-            frontRight.brakeTorque = brake;
-            rearLeft.brakeTorque = handbrake ? brakeTorque * 1.35f : brake;
-            rearRight.brakeTorque = handbrake ? brakeTorque * 1.35f : brake;
+            frontLeft.brakeTorque = serviceBrake;
+            frontRight.brakeTorque = serviceBrake;
+            rearLeft.brakeTorque = handbrake ? brakeTorque * 1.35f : serviceBrake;
+            rearRight.brakeTorque = handbrake ? brakeTorque * 1.35f : serviceBrake;
 
             body.AddForce(-transform.up * (downforce * body.linearVelocity.magnitude), ForceMode.Force);
         }
