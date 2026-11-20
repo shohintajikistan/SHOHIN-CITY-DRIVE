@@ -2,10 +2,6 @@ name: SHOHIN CITY DRIVE - Unity Android Build
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "UnityProject/**"
-      - ".github/workflows/unity-android.yml"
 
 permissions:
   contents: read
