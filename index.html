@@ -79,7 +79,7 @@ for(let i=0;i<100;i++){const x=(rnd()-.5)*360,z=(rnd()-.5)*360;if(roads.some(v=>
  const crown=new THREE.Mesh(new THREE.SphereGeometry(1.65,12,9),leaf);crown.scale.set(1,1.25,1);crown.position.set(x,3.4,z);crown.castShadow=true;scene.add(crown);
 }
 // Custom GT 911-style rear-engine sports coupe with rounded nose, sloping fastback roof and wide rear haunches.
-const colors=[0x087b53,0xc83229,0x2459a8];let selected=0,carPaint=mat(colors[0],.24,.62);
+const colors=[0x087b53,0xc83229,0x2459a8];let selected=0,carPaint=new THREE.MeshPhysicalMaterial({color:colors[0],roughness:.2,metalness:.72,clearcoat:1,clearcoatRoughness:.075});
 const tireMat=mat(0x111416,.94),rimMat=mat(0xb9c2c3,.25,.82),darkMat=mat(0x171d20,.4,.35);
 const glassMat=new THREE.MeshPhysicalMaterial({color:0x83aeb9,metalness:.55,roughness:.12,transmission:.12,transparent:true,opacity:.9});
 const headMat=new THREE.MeshStandardMaterial({color:0xfff2cf,emissive:0xffd889,emissiveIntensity:1.3});
@@ -245,7 +245,7 @@ for(const x of [-.55,.55]){
 for(const part of carBody.children)part.position.y-=.55;
 carBody.position.y=.55;
 // Player and driving physics.
-car.position.set(0,0,0);let heading=0,speed=0,slip=0,drift=0,started=false,paused=false,view=0,handbrake=false;
+car.position.set(0,0,0);let heading=0,speed=0,slip=0,lateralSpeed=0,drift=0,started=false,paused=false,view=0,handbrake=false;
 const keys={left:false,right:false,gas:false,brake:false,hand:false};
 document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;const on=e=>{e.preventDefault();keys[k]=true;b.classList.add('down')},off=e=>{e.preventDefault();keys[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',on);['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,off))});
 addEventListener('keydown',e=>{const map={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake',' ':'hand'};if(map[e.key])keys[map[e.key]]=true});
@@ -256,56 +256,93 @@ $('start').onclick=()=>{$('menu').style.display='none';started=true;paused=false
 $('pause').onclick=()=>{if(!started)return;paused=!paused;$('pause').textContent=paused?'▶ ПРОДОЛЖИТЬ':'Ⅱ ПАУЗА'};
 const clock=new THREE.Clock();let driftTimer=0;
 function update(dt){
- const steer=(keys.left?1:0)-(keys.right?1:0),hand=keys.hand;
- const throttle=keys.gas?1:0,braking=keys.brake?1:0;
- // Progressive throttle, stronger braking and controlled reverse.
- if(throttle)speed=THREE.MathUtils.damp(speed,43,hand?1.7:2.15,dt);
- else if(braking&&speed>0)speed=Math.max(0,speed-31*dt);
- else if(braking&&speed<=0)speed=Math.max(-9,speed-10*dt);
- else speed=THREE.MathUtils.damp(speed,0,.42,dt);
- const speedFactor=Math.min(1,Math.abs(speed)/12);
- const steeringResponse=THREE.MathUtils.lerp(.5,1.25,speedFactor);
- const targetSlip=hand&&Math.abs(speed)>4?steer*.78:steer*.045;
- slip=THREE.MathUtils.damp(slip,targetSlip,hand?4.5:3.2,dt);
- const direction=speed<-.25?-1:1;
- heading+=steer*dt*steeringResponse*direction*(.25+speedFactor*.92);
- car.rotation.y=heading+slip*.3;
+ const steer=(keys.left?1:0)-(keys.right?1:0);
+ const hand=keys.hand,throttle=keys.gas?1:0,braking=keys.brake?1:0;
+ // Engine, service brake and reverse: speed is measured in metres per second.
+ if(throttle){
+  if(speed<0)speed=Math.min(0,speed+24*dt);
+  else speed=THREE.MathUtils.damp(speed,43,2.0,dt);
+ }else if(braking){
+  if(speed>0)speed=Math.max(0,speed-30*dt);
+  else speed=Math.max(-9,speed-9*dt);
+ }else speed=THREE.MathUtils.damp(speed,0,.48,dt);
+ const speedFactor=Math.min(1,Math.abs(speed)/18);
+ // Front-wheel steering follows a bicycle model: the car turns toward the steering input.
+ const maxSteer=THREE.MathUtils.lerp(.52,.28,speedFactor);
+ const steerAngle=steer*maxSteer;
+ const wheelBase=2.56;
+ const yawRate=(speed/wheelBase)*Math.tan(steerAngle);
+ heading+=yawRate*dt;
+ // Handbrake releases rear grip and creates controlled lateral momentum.
+ const lateralTarget=hand&&Math.abs(speed)>5?steer*Math.abs(speed)*.34:0;
+ lateralSpeed=THREE.MathUtils.damp(lateralSpeed,lateralTarget,hand?2.8:5.5,dt);
+ if(!hand)lateralSpeed*=Math.exp(-1.25*dt);
+ slip=THREE.MathUtils.damp(slip,Math.atan2(lateralSpeed,Math.max(2,Math.abs(speed))),5,dt);
+ car.rotation.y=heading;
  const forward=new THREE.Vector3(Math.sin(heading),0,-Math.cos(heading));
  const side=new THREE.Vector3(Math.cos(heading),0,Math.sin(heading));
  const previous=car.position.clone();
- const travel=new THREE.Vector3().addScaledVector(forward,speed*dt).addScaledVector(side,slip*Math.abs(speed)*dt*(hand?.62:.22));
+ const travel=new THREE.Vector3().addScaledVector(forward,speed*dt).addScaledVector(side,lateralSpeed*dt);
  car.position.add(travel);
- car.position.x=THREE.MathUtils.clamp(car.position.x,-198,198);car.position.z=THREE.MathUtils.clamp(car.position.z,-198,198);
- // Buildings are solid: expand their footprints by the car's collision radius.
+ car.position.x=THREE.MathUtils.clamp(car.position.x,-198,198);
+ car.position.z=THREE.MathUtils.clamp(car.position.z,-198,198);
+ // Buildings have solid collision boundaries; stop the car at the first contact.
  let hit=null;
- for(const b of buildingColliders){if(Math.abs(car.position.x-b.x)<b.hx&&Math.abs(car.position.z-b.z)<b.hz){hit=b;break}}
+ for(const b of buildingColliders){
+  const dx=Math.abs(car.position.x-b.x),dz=Math.abs(car.position.z-b.z);
+  if(dx<b.hx&&dz<b.hz){hit=b;break}
+ }
  if(hit){
   const dx=Math.abs(car.position.x-hit.x),dz=Math.abs(car.position.z-hit.z);
-  if(dx/hit.hx>dz/hit.hz){car.position.x=previous.x;rollVelZ+=(car.position.x>hit.x?1:-1)*Math.min(2.8,Math.abs(speed)*.075)}
-  else{car.position.z=previous.z;rollVelX+=(car.position.z>hit.z?1:-1)*Math.min(2.8,Math.abs(speed)*.075)}
-  if(Math.abs(speed)>13){rollVelZ+=(Math.random()-.5)*.9;rollVelX+=(Math.random()-.5)*.9}
-  speed*= -.12;slip*=.25;
+  if(dx/hit.hx>dz/hit.hz)car.position.x=previous.x;
+  else car.position.z=previous.z;
+  if(Math.abs(speed)>2){
+   speed*=-.16;
+   lateralSpeed*=.18;
+   rollVelX+=(Math.random()-.5)*Math.min(1.2,Math.abs(speed)*.06);
+   rollVelZ+=(Math.random()-.5)*Math.min(1.2,Math.abs(speed)*.06);
+  }
  }
- // Only the vehicle body rolls; the chase camera remains level and never rotates with it.
- rollVelX-=Math.sin(rollX)*13*dt;rollVelZ-=Math.sin(rollZ)*13*dt;
+ // Body suspension/roll reacts to steering and collisions; camera never rolls with the car.
+ const cornering=Math.max(-1,Math.min(1,yawRate*speed/18));
+ rollVelZ+=(-cornering*.42-rollZ*8)*dt;
+ rollVelX+=(-Math.sin(heading)*0-rollX*8)*dt;
  rollX+=rollVelX*dt;rollZ+=rollVelZ*dt;
- rollVelX*=Math.exp(-1.15*dt);rollVelZ*=Math.exp(-1.15*dt);
- if(Math.abs(rollX)<.012&&Math.abs(rollVelX)<.025){rollX=0;rollVelX=0}
- if(Math.abs(rollZ)<.012&&Math.abs(rollVelZ)<.025){rollZ=0;rollVelZ=0}
+ rollVelX*=Math.exp(-3.2*dt);rollVelZ*=Math.exp(-3.2*dt);
+ if(Math.abs(rollX)<.008&&Math.abs(rollVelX)<.02){rollX=0;rollVelX=0}
+ if(Math.abs(rollZ)<.008&&Math.abs(rollVelZ)<.02){rollZ=0;rollVelZ=0}
  carBody.rotation.set(rollX,0,rollZ);
- carBody.position.y=Math.max(.55,Math.abs(Math.cos(rollX))*.47+Math.abs(Math.sin(rollX))*1.95+Math.abs(Math.sin(rollZ))*1.02+.04);
- for(const w of wheelParts){w.tire.rotation.x-=speed*dt/.43;w.rim.rotation.x-=speed*dt/.43;if(w.front)w.pivot.rotation.y=THREE.MathUtils.damp(w.pivot.rotation.y,steer*.43,9,dt)}
+ carBody.position.y=Math.max(.55,.55+Math.abs(rollZ)*.2);
+ // All four wheels spin with road speed; only the front wheels steer.
+ for(const w of wheelParts){
+  w.tire.rotation.x-=speed*dt/.43;
+  w.rim.rotation.x-=speed*dt/.43;
+  if(w.front)w.pivot.rotation.y=THREE.MathUtils.damp(w.pivot.rotation.y,steerAngle,12,dt);
+ }
  const drifting=hand&&Math.abs(speed)>7&&Math.abs(steer)>.05;
- if(drifting){drift+=Math.abs(speed)*dt*2.2;driftTimer=.3;$('drift').style.opacity=1}else{driftTimer=Math.max(0,driftTimer-dt);if(driftTimer===0)$('drift').style.opacity=0}
- $('speed').textContent=Math.round(Math.abs(speed)*3.6);$('gear').textContent=speed<-.5?'R':Math.abs(speed)<.5?'N':speed<13?'1':speed<24?'2':speed<34?'3':'4';$('driftScore').textContent=Math.floor(drift);
+ if(drifting){drift+=Math.abs(speed)*dt*2.2;driftTimer=.3;$('drift').style.opacity=1}
+ else{driftTimer=Math.max(0,driftTimer-dt);if(driftTimer===0)$('drift').style.opacity=0}
+ $('speed').textContent=Math.round(Math.abs(speed)*3.6);
+ $('gear').textContent=speed<-.5?'R':Math.abs(speed)<.5?'N':speed<13?'1':speed<24?'2':speed<34?'3':'4';
+ $('driftScore').textContent=Math.floor(drift);
 }
 function cameraUpdate(dt){
- // Camera follows the car's position only. Its world orientation stays level while steering.
- let desired,target;
- if(view===0){desired=car.position.clone().add(new THREE.Vector3(0,4.1,8));target=car.position.clone().add(new THREE.Vector3(0,1.05,0))}
- else if(view===1){desired=car.position.clone().add(new THREE.Vector3(0,7.2,13));target=car.position.clone().add(new THREE.Vector3(0,.8,0))}
- else{desired=car.position.clone().add(new THREE.Vector3(0,1.75,-1.15));target=car.position.clone().add(new THREE.Vector3(0,1.2,-18))}
- camera.position.lerp(desired,1-Math.exp(-4.2*dt));camera.up.set(0,1,0);camera.lookAt(target);
+ // Chase camera stays behind the car's actual heading and remains horizon-level.
+ const forward=new THREE.Vector3(Math.sin(heading),0,-Math.cos(heading));
+ const desired,target;
+ if(view===0){
+  desired=car.position.clone().addScaledVector(forward,-8).add(new THREE.Vector3(0,3.7,0));
+  target=car.position.clone().addScaledVector(forward,2).add(new THREE.Vector3(0,1.05,0));
+ }else if(view===1){
+  desired=car.position.clone().addScaledVector(forward,-13).add(new THREE.Vector3(0,6.8,0));
+  target=car.position.clone().addScaledVector(forward,2).add(new THREE.Vector3(0,.8,0));
+ }else{
+  desired=car.position.clone().addScaledVector(forward,1.5).add(new THREE.Vector3(0,1.65,0));
+  target=car.position.clone().addScaledVector(forward,19).add(new THREE.Vector3(0,1.2,0));
+ }
+ camera.position.lerp(desired,1-Math.exp(-5*dt));
+ camera.up.set(0,1,0);
+ camera.lookAt(target);
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);if(started&&!paused)update(dt);cameraUpdate(dt);renderer.render(scene,camera)}
 camera.position.set(0,5,11);camera.lookAt(0,0,0);animate();
