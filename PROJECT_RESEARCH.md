@@ -107,7 +107,7 @@ https://docs.unity.com/en-us/engine/6000.3/manual/platform-specific/android/deve
 
 Unity Editor не запускается как обычный Android-редактор на телефоне. Поэтому телефон используется для управления репозиторием и workflow, а компиляция выполняется на runner GitHub Actions через GameCI.
 
-GameCI требует Unity license. Для Unity Personal предусмотрен отдельный процесс: запросить activation-файл, получить лицензию через аккаунт Unity и сохранить её как GitHub Actions secret `UNITY_LICENSE`.
+GameCI требует Unity license. По актуальной инструкции GameCI для Unity Personal нужно создать файл лицензии `.ulf` через Unity Hub на доступном компьютере, а затем добавить три GitHub Actions secrets: `UNITY_LICENSE`, `UNITY_EMAIL` и `UNITY_PASSWORD`. После копирования файла следует выйти из Unity Hub, чтобы освободить Personal seat. Это одноразовая настройка для CI. Только с Android-приложения GitHub/ChatGPT надёжно выполнить официальный процесс создания .ulf нельзя; можно одолжить компьютер на короткое время.
 
 Официальные источники:
 - GameCI activation: https://game.ci/docs/github/activation/
@@ -115,10 +115,9 @@ GameCI требует Unity license. Для Unity Personal предусмотр�
 - GameCI getting started: https://game.ci/docs/github/getting-started/
 
 В репозитории созданы два workflow:
-- `.github/workflows/unity-activation.yml` — запрос activation-файла;
 - `.github/workflows/unity-android.yml` — сборка APK.
 
-Пока secret `UNITY_LICENSE` не добавлен, сборка Android не может считаться готовой. Даже успешная компиляция не подтверждает отсутствие игровых ошибок: APK необходимо установить на физический телефон и проверить.
+Пока secrets `UNITY_LICENSE`, `UNITY_EMAIL` и `UNITY_PASSWORD` не добавлены, сборка Android не может считаться готовой. Даже успешная компиляция не подтверждает отсутствие игровых ошибок: APK необходимо установить на физический телефон и проверить.
 
 ## 9. Что уже находится в репозитории
 
