@@ -1,19 +1,27 @@
-# SHOHIN BEACH RACING
+# SHOHIN CITY DRIVE
 
-Mobile-first 3D arcade kart racer with a tropical island circuit, inspired by the beach-kart racing genre.
+SHOHIN CITY DRIVE is being rebuilt as a native Android 3D driving game.
 
-## Play
-Open the GitHub Pages website. Press **НАЧАТЬ ГОНКУ** and use the on-screen arrows, gas and brake. Keyboard controls are also supported.
+## Technology
+- Unity 6.3 LTS (pinned editor: 6000.3.28f1)
+- C#
+- Universal Render Pipeline (URP) 17.3.0
+- Unity WheelCollider vehicle physics
+- Android ARM64 build target
+- GitHub Actions + GameCI for automated APK builds
 
-## Current build
-- Procedural tropical island and looping beach track
-- Third-person follow camera and arcade buggy controls
-- Three AI rivals, three-lap race and position indicator
-- Track boundaries, obstacles, collisions and turbo pickups
-- Responsive touch controls and pause/reset
-- Runs as a static web game; Three.js is loaded from jsDelivr
+## Current repository state
+The previous Babylon.js browser prototype and old Godot experiment have been removed from the active branch. The new Unity project lives in `UnityProject/`.
 
-## Project
-The old city-driving prototype, generated city-car model, and unused Godot files were removed from the active branch. The repository is now dedicated to SHOHIN BEACH RACING.
+The first editor-generated scene is a small procedural city blockout with a temporary physics test chassis, WheelColliders, a chase camera, speed HUD, and touch controls. **The temporary chassis is not a finished realistic car model.** A properly licensed detailed vehicle asset, sound, refined suspension/tire tuning, and production city art are still required.
 
-This is an evolving prototype, not a commercial-grade finished game.
+## Build
+1. Run the **Request Unity Personal License File** workflow in GitHub Actions.
+2. Download the `Unity-Activation-File` artifact and use it with your Unity account to obtain the Personal license file.
+3. Add the license file contents as the repository Actions secret named `UNITY_LICENSE`.
+4. Run **SHOHIN CITY DRIVE - Unity Android Build**. The APK is uploaded as a workflow artifact.
+
+A successful workflow build is not the same as a tested game. The APK must still be installed and tested on a real Android device.
+
+## Project notes
+See [PROJECT_RESEARCH.md](PROJECT_RESEARCH.md) for the technical decisions, performance targets, physics plan, asset licensing rules, and known limitations.
