@@ -13,30 +13,38 @@ permissions:
 jobs:
   build-glb:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Blender
+      - name: Install Blender and NumPy
         run: |
+          set -euxo pipefail
           sudo apt-get update
           sudo apt-get install -y blender python3-numpy
           blender --version
-          blender --background --python-expr "import numpy; print('NumPy available:', numpy.__version__)"
+          PYTHONPATH=/usr/lib/python3/dist-packages blender --background --python-expr "import sys, numpy; print('Blender Python:', sys.version); print('NumPy:', numpy.__version__)"
 
       - name: Build SHOHIN CAR model
         run: |
-          blender --background --python scripts/build_car.py
+          set -euxo pipefail
+          mkdir -p exports
+          PYTHONPATH=/usr/lib/python3/dist-packages blender --background --python scripts/build_car.py
+          test -s exports/shohin_car.glb
+          ls -lh exports/shohin_car.glb
 
       - name: Copy model into game assets
         run: |
+          set -euxo pipefail
           mkdir -p assets/models
           cp exports/shohin_car.glb assets/models/shohin_car.glb
+          test -s assets/models/shohin_car.glb
           ls -lh assets/models/shohin_car.glb
 
       - name: Save generated model in repository
         run: |
+          set -euxo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/models/shohin_car.glb
