@@ -71,7 +71,7 @@ namespace SHOHIN.Editor
             pipeline.maxAdditionalLightsCount = 0;
             pipeline.supportsCameraDepthTexture = false;
             pipeline.supportsCameraOpaqueTexture = false;
-            pipeline.supportsDynamicBatching = true;
+            pipeline.supportsDynamicBatching = false;
             pipeline.useSRPBatcher = true;
             EditorUtility.SetDirty(pipeline);
             GraphicsSettings.defaultRenderPipeline = pipeline;
@@ -349,6 +349,8 @@ namespace SHOHIN.Editor
             var go = GameObject.CreatePrimitive(type);
             go.name = name; go.transform.position = position; go.transform.localScale = scale;
             go.GetComponent<Renderer>().sharedMaterial = material;
+            GameObjectUtility.SetStaticEditorFlags(go,
+                StaticEditorFlags.BatchingStatic | StaticEditorFlags.OccluderStatic | StaticEditorFlags.OccludeeStatic);
             return go;
         }
 
