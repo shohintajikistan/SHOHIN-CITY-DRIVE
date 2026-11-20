@@ -1,75 +1,49 @@
 <!doctype html>
-<html lang="ru">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#071c16"><title>SHOHIN CITY DRIVE</title>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#071c16"><title>SHOHIN BEACH RACING</title>
 <style>
-:root{--g:#071c16;--g2:#0d3024;--lime:#baf05b;--gold:#e6c46a}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071c16;color:#fff;font-family:system-ui,Arial;touch-action:none}
-#game{position:fixed;inset:0}canvas{display:block}
-#top{position:fixed;top:0;left:0;right:0;padding:calc(12px + env(safe-area-inset-top)) 14px 10px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;background:linear-gradient(#06150fd9,transparent)}
-.brand{font-weight:900;letter-spacing:2px;color:var(--lime);font-size:17px;text-shadow:0 2px 10px #000}.sub{font-size:10px;color:#d4e2d9;letter-spacing:2px}
-.stats{display:flex;gap:8px}.pill{background:#071c16d9;border:1px solid #baf05b55;border-radius:12px;padding:7px 10px;min-width:66px;text-align:center;backdrop-filter:blur(8px)}.num{font-size:19px;font-weight:800;color:var(--lime);line-height:1.1}.small{font-size:9px;color:#c7d8ce;letter-spacing:1px}
-#hint{position:fixed;top:86px;left:50%;transform:translateX(-50%);font-size:11px;color:#eff7f1;background:#071c16a8;padding:7px 12px;border-radius:20px;white-space:nowrap;pointer-events:none}
-#controls{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:end;padding:0 18px;pointer-events:none}
-.cluster{display:flex;gap:12px;align-items:end;pointer-events:auto}
-.ctrl{width:66px;height:66px;border-radius:19px;border:1px solid #baf05b88;background:linear-gradient(145deg,#164632eF,#071c16ed);color:white;font-size:25px;font-weight:800;box-shadow:0 7px 20px #0008;display:grid;place-items:center;user-select:none;-webkit-user-select:none;touch-action:none}
-.ctrl:active,.ctrl.down{background:linear-gradient(145deg,#baf05b,#68a82b);color:#071c16;transform:scale(.96)}
-.ctrl.gas{width:76px;height:82px;color:var(--lime);font-size:14px;letter-spacing:1px}.ctrl.brake{height:64px;font-size:12px;color:#ffcfaa}
-#menu{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 40%,#164632aa,#04110df2 70%);display:flex;align-items:center;justify-content:center;padding:24px;z-index:5}
-.panel{width:min(440px,100%);text-align:center;background:#071c16eF;border:1px solid #baf05b66;border-radius:26px;padding:28px 22px;box-shadow:0 25px 80px #0009}
-.crown{font-size:42px;color:var(--gold);line-height:1}.panel h1{font-size:26px;letter-spacing:2px;margin:12px 0 4px;color:var(--lime)}.panel p{font-size:13px;line-height:1.5;color:#c8d8ce;margin:8px 0 22px}
-#start{width:100%;border:0;border-radius:15px;background:linear-gradient(90deg,#baf05b,#d9f99b);color:#071c16;padding:15px;font-weight:900;font-size:15px;letter-spacing:1px}
-.note{font-size:10px!important;color:#8ea99a!important;margin:14px 0 0!important}
-#loading{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:13px;color:var(--lime);background:#071c16d9;padding:12px 16px;border-radius:12px;pointer-events:none}
-#reset{position:fixed;right:14px;top:100px;border:1px solid #baf05b66;background:#071c16b8;color:#d9f99b;border-radius:10px;padding:8px 10px;font-size:11px}
-@media(min-width:800px){.ctrl{width:74px;height:74px}.ctrl.gas{width:90px;height:90px}#controls{padding:0 5vw 24px}}
-</style>
-</head>
-<body>
-<div id="game"></div>
-<div id="top"><div><div class="brand">♛ SHOHIN</div><div class="sub">CITY DRIVE · CITY</div></div><div class="stats"><div class="pill"><div class="num" id="speed">0</div><div class="small">КМ/Ч</div></div><div class="pill"><div class="num" id="gear">N</div><div class="small">ПЕРЕДАЧА</div></div></div></div>
-<div id="hint">ГОРОД · СВОБОДНАЯ ПОЕЗДКА</div>
-<button id="reset">↻ СБРОС</button>
-<div id="loading">Загрузка города...</div>
-<div id="controls">
- <div class="cluster"><button class="ctrl" data-key="left">◀</button><button class="ctrl" data-key="right">▶</button></div>
- <div class="cluster"><button class="ctrl brake" data-key="brake">ТОРМОЗ</button><button class="ctrl gas" data-key="gas">ГАЗ ▲</button></div>
-</div>
-<div id="menu"><div class="panel"><div class="crown">♛</div><h1>SHOHIN CITY DRIVE</h1><div class="sub">ГОРОД · OPEN WORLD</div><p>Свободная поездка по 3D-городку. Управляй автомобилем касанием экрана или клавишами.</p><button id="start">НАЧАТЬ ПОЕЗДКУ</button><p class="note">Первая браузерная версия · игра использует интернет для загрузки 3D-библиотеки</p></div></div>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+:root{--g:#071c16;--lime:#baf05b;--gold:#e6c46a}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08718a;color:#fff;font-family:system-ui,Arial;touch-action:none}#game{position:fixed;inset:0}canvas{display:block}
+#top{position:fixed;top:0;left:0;right:0;padding:calc(12px + env(safe-area-inset-top)) 14px 10px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;background:linear-gradient(#06150fdb,transparent)}.brand{font-weight:900;letter-spacing:2px;color:var(--lime);font-size:17px;text-shadow:0 2px 10px #000}.sub{font-size:10px;color:#e2f0e8;letter-spacing:2px}.stats{display:flex;gap:7px}.pill{background:#071c16dd;border:1px solid #baf05b66;border-radius:12px;padding:7px 10px;min-width:62px;text-align:center}.num{font-size:18px;font-weight:900;color:var(--lime);line-height:1.1}.small{font-size:9px;color:#d3e3d8;letter-spacing:1px}
+#hint{position:fixed;top:82px;left:50%;transform:translateX(-50%);font-size:10px;color:#fff;background:#071c16b8;padding:7px 12px;border-radius:20px;white-space:nowrap;pointer-events:none}
+#controls{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:end;padding:0 16px;pointer-events:none}.cluster{display:flex;gap:10px;align-items:end;pointer-events:auto}.ctrl{width:64px;height:64px;border-radius:18px;border:1px solid #baf05b99;background:linear-gradient(145deg,#164632ef,#071c16ed);color:white;font-size:24px;font-weight:900;display:grid;place-items:center;user-select:none;touch-action:none}.ctrl:active,.ctrl.down{background:linear-gradient(145deg,#baf05b,#68a82b);color:#071c16}.ctrl.gas{width:76px;height:82px;color:var(--lime);font-size:13px}.ctrl.brake{height:62px;font-size:11px;color:#ffd2ad}
+#menu{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 40%,#1b674dbb,#04110df4 72%);display:flex;align-items:center;justify-content:center;padding:22px;z-index:5}.panel{width:min(430px,100%);text-align:center;background:#071c16ef;border:1px solid #baf05b77;border-radius:25px;padding:27px 21px;box-shadow:0 25px 80px #000a}.crown{font-size:40px;color:var(--gold)}.panel h1{font-size:25px;letter-spacing:1.5px;margin:8px 0 4px;color:var(--lime)}.panel p{font-size:13px;line-height:1.5;color:#d0dfd5;margin:10px 0 20px}#start{width:100%;border:0;border-radius:14px;background:linear-gradient(90deg,#baf05b,#e0f8a5);color:#071c16;padding:15px;font-weight:900;font-size:15px;letter-spacing:1px}.note{font-size:10px!important;color:#8ea99a!important;margin:13px 0 0!important}#reset{position:fixed;right:12px;top:100px;z-index:2;border:1px solid #baf05b77;background:#071c16bb;color:#d9f99b;border-radius:10px;padding:8px 10px;font-size:11px}
+</style></head><body><div id="game"></div>
+<div id="top"><div><div class="brand">♛ SHOHIN</div><div class="sub">BEACH RACING · TROPICAL CUP</div></div><div class="stats"><div class="pill"><div class="num" id="speed">0</div><div class="small">КМ/Ч</div></div><div class="pill"><div class="num" id="lap">1/3</div><div class="small">КРУГ</div></div></div></div>
+<div id="hint">TROPICAL ISLAND · RACE MODE</div><button id="reset">↻ СБРОС</button>
+<div id="controls"><div class="cluster"><button class="ctrl" data-key="left">◀</button><button class="ctrl" data-key="right">▶</button></div><div class="cluster"><button class="ctrl brake" data-key="brake">ТОРМОЗ</button><button class="ctrl gas" data-key="gas">ГАЗ ▲</button></div></div>
+<div id="menu"><div class="panel"><div class="crown">♛</div><h1>SHOHIN BEACH RACING</h1><div class="sub">TROPICAL ISLAND CUP</div><p>Гоночная трасса на тропическом острове. Обгони соперников, проходи контрольные точки и финишируй первым. Управление кнопками на экране.</p><button id="start">НАЧАТЬ ГОНКУ</button><p class="note">3D · 3 круга · соперники · мобильное управление</p></div></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 <script type="module">
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const host=document.querySelector('#game'),speedEl=document.querySelector('#speed'),gearEl=document.querySelector('#gear'),loading=document.querySelector('#loading');
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc6d7);scene.fog=new THREE.Fog(0x9bc6d7,90,310);
-const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,600);camera.position.set(0,7,13);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xd9efff,0x59634a,2.1));const sun=new THREE.DirectionalLight(0xfff0cf,2.2);sun.position.set(-45,75,35);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
-const mat=(c,r=.85)=>new THREE.MeshStandardMaterial({color:c,roughness:r});
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(600,600),mat(0x788b65));ground.rotation.x=-Math.PI/2;ground.position.y=-.08;ground.receiveShadow=true;scene.add(ground);
-const roadMat=mat(0x30383a),lineMat=mat(0xe6dfbd),sideMat=mat(0xaaa99b);
-function road(x,z,w,d){let m=new THREE.Mesh(new THREE.BoxGeometry(w,.12,d),roadMat);m.position.set(x,0,z);m.receiveShadow=true;scene.add(m);let horizontal=w>d;let count=horizontal?Math.floor(w/9):Math.floor(d/9);for(let i=-count/2;i<count/2;i++){let dash=new THREE.Mesh(new THREE.BoxGeometry(horizontal?3:.13,.025,horizontal?.13:3),lineMat);dash.position.set(x+(horizontal?i*9:0),.075,z+(horizontal?0:i*9));scene.add(dash)}}
-road(0,0,600,15);road(0,0,15,600);road(0,-85,600,12);road(95,0,12,600);road(-100,0,12,600);
-const bMats=[0xc9b99d,0xd8d2c1,0x9eaeb1,0xd9c7a6,0xb9c4b1].map(c=>mat(c));
-function building(x,z,w,h,d,idx){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),bMats[idx%5]);m.position.set(x,h/2,z);m.castShadow=true;m.receiveShadow=true;scene.add(m);let roof=new THREE.Mesh(new THREE.BoxGeometry(w+0.4,.35,d+.4),mat(0x59635b));roof.position.set(x,h+.15,z);scene.add(roof);for(let y=2;y<h-1;y+=2.7)for(let xx=-w/2+1;xx<w/2-0.4;xx+=2.2){let win=new THREE.Mesh(new THREE.BoxGeometry(.95,1.25,.06),mat(0x547b85,.35));win.position.set(x+xx,y,z-d/2-.04);scene.add(win)}}
-let seed=17;function rand(){seed=(seed*9301+49297)%233280;return seed/233280}
-for(let gx=-250;gx<=250;gx+=34)for(let gz=-250;gz<=250;gz+=34){if(Math.abs(gx)<20||Math.abs(gz)<20||Math.abs(gz+85)<15||Math.abs(gx-95)<15||Math.abs(gx+100)<15)continue;let w=12+rand()*12,d=12+rand()*12,h=8+rand()*32;building(gx+(rand()-.5)*7,gz+(rand()-.5)*7,w,h,d,Math.floor(rand()*5))}
-const mountainMat=mat(0x748a85);for(let i=0;i<24;i++){let a=i/24*Math.PI*2,r=230+rand()*35,h=35+rand()*65;let m=new THREE.Mesh(new THREE.ConeGeometry(25+rand()*20,h,5),mountainMat);m.position.set(Math.cos(a)*r,h/2-2,Math.sin(a)*r);m.rotation.y=rand()*3;scene.add(m)}
-// Street lamps
-for(let x=-180;x<=180;x+=35){for(let z of [-11,11]){let pole=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,5,6),mat(0x303b35));pole.position.set(x,2.5,z);scene.add(pole);let arm=new THREE.Mesh(new THREE.BoxGeometry(1.3,.12,.12),mat(0x303b35));arm.position.set(x+.55,4.8,z);scene.add(arm)}}
-const carRoot=new THREE.Group();scene.add(carRoot);let carVisual=new THREE.Group();carRoot.add(carVisual);
-function fallbackCar(){let body=new THREE.Mesh(new THREE.BoxGeometry(2.05,.65,4.1),mat(0x087b53,.32));body.position.y=.75;body.castShadow=true;carVisual.add(body);let cabin=new THREE.Mesh(new THREE.BoxGeometry(1.55,.75,2),mat(0x182b2b,.25));cabin.position.set(0,1.38,-.15);cabin.castShadow=true;carVisual.add(cabin);for(let x of [-1,1])for(let z of [-1.35,1.35]){let wheel=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.28,16),mat(0x16191a));wheel.rotation.z=Math.PI/2;wheel.position.set(x,.42,z);carVisual.add(wheel)}}
-fallbackCar();
-const loader=new GLTFLoader();loader.load('https://raw.githubusercontent.com/shohintajikistan/SHOHIN-CITY-DRIVE/main/assets/models/shohin_car.glb',g=>{carVisual.clear();let model=g.scene;model.scale.setScalar(.9);model.rotation.y=0;model.position.y=0;model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});carVisual.add(model);loading.style.display='none'},undefined,()=>{loading.textContent='Город готов';setTimeout(()=>loading.style.display='none',1200)});
-carRoot.position.set(0,0,24);
-const keys={left:false,right:false,gas:false,brake:false};document.querySelectorAll('[data-key]').forEach(btn=>{let k=btn.dataset.key;const on=e=>{e.preventDefault();keys[k]=true;btn.classList.add('down')},off=e=>{e.preventDefault();keys[k]=false;btn.classList.remove('down')};btn.addEventListener('pointerdown',on);['pointerup','pointercancel','pointerleave'].forEach(t=>btn.addEventListener(t,off))});
-addEventListener('keydown',e=>{let k={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake'}[e.key];if(k)keys[k]=true});addEventListener('keyup',e=>{let k={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake'}[e.key];if(k)keys[k]=false});
-let velocity=0,heading=0,started=false;const clock=new THREE.Clock();
-function reset(){carRoot.position.set(0,0,24);heading=0;velocity=0}
-document.querySelector('#reset').onclick=reset;
-document.querySelector('#start').onclick=()=>{started=true;document.querySelector('#menu').style.display='none'};
-function animate(){requestAnimationFrame(animate);let dt=Math.min(clock.getDelta(),.04);if(started){if(keys.gas)velocity=Math.min(velocity+22*dt,48);else velocity=Math.max(0,velocity-5*dt);if(keys.brake)velocity=Math.max(-8,velocity-38*dt);if(Math.abs(velocity)>.5){let steer=(keys.left?1:0)-(keys.right?1:0);heading+=steer*dt*(1.5+Math.abs(velocity)*.035)*Math.sign(velocity);carRoot.position.x+=Math.sin(heading)*velocity*dt;carRoot.position.z-=Math.cos(heading)*velocity*dt;}carRoot.rotation.y=heading;speedEl.textContent=Math.round(Math.abs(velocity)*3.6);gearEl.textContent=velocity<-.5?'R':velocity>.5?'D':'N';}
-let target=new THREE.Vector3(carRoot.position.x+Math.sin(heading)*10,5.8,carRoot.position.z-Math.cos(heading)*10);camera.position.lerp(target,.08);let look=new THREE.Vector3(carRoot.position.x,1.1,carRoot.position.z);camera.lookAt(look);renderer.render(scene,camera)}
-animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+const host=document.querySelector('#game'),speedEl=document.querySelector('#speed'),lapEl=document.querySelector('#lap');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x72c9df);scene.fog=new THREE.Fog(0x72c9df,115,280);
+const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.1,500);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xdff8ff,0x8b8057,2.0));const sun=new THREE.DirectionalLight(0xffefc8,2.2);sun.position.set(-45,80,30);scene.add(sun);
+const material=(c,r=.85)=>new THREE.MeshStandardMaterial({color:c,roughness:r});
+const sand=material(0xe5cb88),water=material(0x087f9d),road=material(0x9b774a),white=material(0xf4e8c8),red=material(0xc83d25),green=material(0x158348),dark=material(0x17201d);
+const sea=new THREE.Mesh(new THREE.PlaneGeometry(600,600),water);sea.rotation.x=-Math.PI/2;sea.position.y=-1.2;scene.add(sea);
+const island=new THREE.Mesh(new THREE.CylinderGeometry(100,108,2,64),sand);island.position.y=-.25;scene.add(island);
+const points=[[-42,48],[-18,58],[12,58],[40,48],[55,25],[52,-5],[38,-30],[12,-43],[-18,-43],[-45,-30],[-58,-7],[-57,20]].map(p=>new THREE.Vector3(p[0],0,p[1]));
+function box(x,y,z,w,h,d,mat,rot=0){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.rotation.y=rot;scene.add(m);return m}
+for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],d=b.clone().sub(a),len=d.length(),ang=Math.atan2(d.x,d.z),mid=a.clone().add(b).multiplyScalar(.5);box(mid.x,.12,mid.z,15,.35,len+1,road,ang);for(const side of [-1,1]){const off=new THREE.Vector3(Math.cos(ang)*side*8,0,-Math.sin(ang)*side*8);box(mid.x+off.x,.29,mid.z+off.z,1.1,.45,len, i%2?white:red,ang)}}
+function palm(x,z,s=1){const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.22*s,.34*s,4.8*s,7),material(0x80502b));trunk.position.set(x,2.4*s,z);scene.add(trunk);for(let j=0;j<6;j++){const leaf=new THREE.Mesh(new THREE.SphereGeometry(1.5*s,7,5),material(j%2?0x168344:0x23994b));leaf.scale.set(1,.14,.45);leaf.position.set(x+Math.cos(j*Math.PI/3)*1.2*s,4.75*s,z+Math.sin(j*Math.PI/3)*1.2*s);leaf.rotation.y=-j*Math.PI/3;scene.add(leaf)}}
+for(let i=0;i<40;i++){const a=i/40*Math.PI*2,r=76+(i%3)*7;palm(Math.cos(a)*r,Math.sin(a)*r,.8+((i%4)*.08))}
+for(let i=0;i<14;i++){const x=-65+i*10;box(x,.55,-55,4,1.1,3,material(0x6b4a2d),0)}
+// Small wooden bridge and a visible jump ramp on the course.
+box(53,.42,11,17,.55,7,material(0x70421f),-.15);box(0,.55,-42,8,1.1,8,red,0);
+const startDir=points[1].clone().sub(points[0]);const startYaw=Math.atan2(-startDir.x,-startDir.z);
+function makeBuggy(color){const root=new THREE.Group();scene.add(root);const body=new THREE.Mesh(new THREE.BoxGeometry(2,.68,3.7),material(color,.35));body.position.y=.68;root.add(body);const cabin=new THREE.Mesh(new THREE.BoxGeometry(1.48,.72,1.75),material(0x19333a,.3));cabin.position.set(0,1.28,-.15);root.add(cabin);for(const x of [-1,1])for(const z of [-1.2,1.2]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.4,.4,.28,14),dark);w.rotation.z=Math.PI/2;w.position.set(x,.38,z);root.add(w)}return root}
+const player=makeBuggy(0x087b53);player.position.set(points[0].x,.15,points[0].z+5);player.rotation.y=startYaw;
+const rivals=[];[0xe64b24,0x2365d8,0xe5b52a].forEach((c,i)=>{const car=makeBuggy(c);car.position.set(points[0].x+(i-1)*3,.15,points[0].z+10+i*3);rivals.push({car,target:1,speed:17+i*1.5})});
+function marker(x,z,color){const m=new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,3,8),material(color));m.position.set(x,1.5,z);scene.add(m)}
+marker(points[0].x,points[0].z,0xbaf05b);
+const keys={left:false,right:false,gas:false,brake:false};document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;const on=e=>{e.preventDefault();keys[k]=true;b.classList.add('down')},off=e=>{e.preventDefault();keys[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',on);['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,off))});
+addEventListener('keydown',e=>{const k={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake'}[e.key];if(k)keys[k]=true});addEventListener('keyup',e=>{const k={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake'}[e.key];if(k)keys[k]=false});
+let speed=0,heading=startYaw,checkpoint=1,lap=1,started=false;const clock=new THREE.Clock();
+function reset(){player.position.set(points[0].x,.15,points[0].z+5);heading=startYaw;player.rotation.y=heading;speed=0;checkpoint=1;lap=1;lapEl.textContent='1/3'}
+document.querySelector('#reset').onclick=reset;document.querySelector('#start').onclick=()=>{started=true;document.querySelector('#menu').style.display='none'};
+function updateRivals(dt){for(const r of rivals){let target=points[r.target];if(r.car.position.distanceTo(target)<8)r.target=(r.target+1)%points.length;target=points[r.target];const dir=target.clone().sub(r.car.position).normalize();const yaw=Math.atan2(-dir.x,-dir.z);r.car.rotation.y=THREE.MathUtils.lerp(r.car.rotation.y,yaw,Math.min(1,dt*2.2));r.car.position.addScaledVector(new THREE.Vector3(Math.sin(r.car.rotation.y),0,-Math.cos(r.car.rotation.y)),r.speed*dt)}}
+function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);if(started){if(keys.gas)speed=Math.min(34,speed+19*dt);else speed=Math.max(0,speed-4*dt);if(keys.brake)speed=Math.max(-6,speed-28*dt);const steer=(keys.left?1:0)-(keys.right?1:0);if(Math.abs(speed)>.15)heading+=steer*dt*(1.35+Math.abs(speed)*.035)*Math.sign(speed);player.rotation.y=heading;player.position.x+=Math.sin(heading)*speed*dt;player.position.z-=Math.cos(heading)*speed*dt;const cp=points[checkpoint];if(player.position.distanceTo(cp)<10){checkpoint++;if(checkpoint>=points.length){checkpoint=0;lap=Math.min(3,lap+1)}lapEl.textContent=lap+'/3'}updateRivals(dt);speedEl.textContent=Math.round(Math.abs(speed)*3.6)}
+const desired=new THREE.Vector3(player.position.x+Math.sin(heading)*10,6.5,player.position.z-Math.cos(heading)*10);camera.position.lerp(desired,.075);camera.lookAt(player.position.x,1,player.position.z);renderer.render(scene,camera)}
+camera.position.set(player.position.x,7,player.position.z+12);animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
