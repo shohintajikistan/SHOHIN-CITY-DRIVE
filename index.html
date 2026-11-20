@@ -41,7 +41,7 @@ const scene=new BABYLON.Scene(engine);
 scene.clearColor=new BABYLON.Color4(.56,.72,.79,1);
 scene.fogMode=BABYLON.Scene.FOGMODE_EXP2;scene.fogDensity=.00165;scene.fogColor=new BABYLON.Color3(.56,.72,.79);
 const camera=new BABYLON.FollowCamera('chase camera',new BABYLON.Vector3(0,5,-12),scene);
-camera.radius=11;camera.heightOffset=3.5;camera.rotationOffset=180;camera.cameraAcceleration=.055;camera.maxCameraSpeed=20;camera.lowerRadiusLimit=7;camera.upperRadiusLimit=16;scene.activeCamera=camera;
+camera.radius=11;camera.heightOffset=3.5;camera.rotationOffset=180;camera.cameraAcceleration=.055;camera.maxCameraSpeed=20;camera.lowerRadiusLimit=.15;camera.upperRadiusLimit=16;scene.activeCamera=camera;
 const hemi=new BABYLON.HemisphericLight('sky light',new BABYLON.Vector3(0,1,0),scene);hemi.intensity=.86;
 const sun=new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(-.5,-1,.35),scene);sun.position.set(35,65,-30);sun.intensity=1.35;
 const mat=(name,color,metal=0,rough=.55)=>{const m=new BABYLON.StandardMaterial(name,scene);m.diffuseColor=BABYLON.Color3.FromHexString(color);m.specularColor=new BABYLON.Color3(.55,.55,.55);m.specularPower=metal?128:64;m.emissiveColor=new BABYLON.Color3(0,0,0);return m};
@@ -127,7 +127,7 @@ function frame(){
  if(throttle)speed+=17.5*dt;
  else speed*=Math.pow(.994,dt*60);
  if(braking){speed=Math.max(0,speed-34*dt)}
- if(keys.hand){speed*=Math.pow(.955,dt*60);lateral+=(Math.sign(steer||1)*Math.abs(speed)*.16-lateral)*Math.min(1,dt*2.5)}
+ if(keys.hand){speed*=Math.pow(.955,dt*60);lateral+=(steer*Math.abs(speed)*.16-lateral)*Math.min(1,dt*2.5)}
  else lateral*=Math.pow(.82,dt*60);
  speed=Math.max(-8,Math.min(58,speed));
  const steerTarget=(keys.right?1:0)-(keys.left?1:0);steer+=(steerTarget-steer)*Math.min(1,dt*6.5);
