@@ -60,9 +60,8 @@ function building(x,z,w,d,h,variant){
  for(let c=0;c<3;c++){const shop=new THREE.Mesh(new THREE.BoxGeometry(w*.19,2.1,.1),glassM);shop.position.set(x-w*.27+c*w*.27,1.35,z-d/2-.15);scene.add(shop)}
 }
 let seed=7;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
-for(let gx=-2;gx<=2;gx++)for(let gz=-2;gz<=2;gz++){
- if(gx===0&&gz===0)continue;
- const x=gx*45+(rnd()-.5)*7,z=gz*45+(rnd()-.5)*7,w=17+rnd()*8,d=16+rnd()*8,h=9+rnd()*27;
+for(let gx=-2;gx<=1;gx++)for(let gz=-2;gz<=1;gz++){
+ const x=gx*45+22.5+(rnd()-.5)*5,z=gz*45+22.5+(rnd()-.5)*5,w=16+rnd()*6,d=16+rnd()*6,h=9+rnd()*27;
  building(x,z,w,d,h,Math.floor(rnd()*5));
 }
 // Street lights, trees, signs and parked vehicles as urban details.
