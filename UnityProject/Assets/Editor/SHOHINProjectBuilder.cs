@@ -58,6 +58,17 @@ namespace SHOHIN.Editor
                 pipeline.name = "SHOHIN_URP";
                 AssetDatabase.CreateAsset(pipeline, SettingsPath + "/SHOHIN_URP.asset");
             }
+            // Mobile-first URP baseline. Visual quality will be raised per device tier after profiling.
+            pipeline.supportsHDR = false;
+            pipeline.renderScale = 0.9f;
+            pipeline.msaaSampleCount = 2;
+            pipeline.shadowDistance = 60f;
+            pipeline.shadowCascadeCount = 1;
+            pipeline.maxAdditionalLightsCount = 0;
+            pipeline.supportsCameraDepthTexture = false;
+            pipeline.supportsCameraOpaqueTexture = false;
+            pipeline.supportsDynamicBatching = true;
+            EditorUtility.SetDirty(pipeline);
             GraphicsSettings.defaultRenderPipeline = pipeline;
             QualitySettings.renderPipeline = pipeline;
         }
