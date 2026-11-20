@@ -20,6 +20,8 @@
 Официальная совместимость Android и render pipeline:
 https://docs.unity.cn/6000.3/Documentation/Manual/android-requirements-and-compatibility.html
 
+Unity 6.3 поддерживает Android API 25 и выше, target API 35/36, Vulkan и OpenGL ES 3.x. URP совместим с Android, HDRP — нет. В build script выбран min API 26 и target API 36; это нужно перепроверить при фактической сборке на выбранной версии Unity/Android SDK.
+
 В первом URP asset уже задан осторожный Android-профиль: HDR выключен, render scale 0.9, MSAA 2x, тени до 60 м и одна cascade, дополнительные источники света ограничены нулём, depth/opaque textures выключены, SRP Batcher включён. Статичная геометрия тестового города помечается для batching и occlusion. Эти параметры — стартовая конфигурация, а не подтверждённый FPS.
 
 План графических профилей:
