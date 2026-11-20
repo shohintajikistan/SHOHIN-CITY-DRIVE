@@ -332,11 +332,13 @@ namespace SHOHIN.Editor
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
-            Directory.CreateDirectory("Build/Android");
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            string buildFolder = Path.Combine(projectRoot, "Build", "Android");
+            Directory.CreateDirectory(buildFolder);
             var options = new BuildPlayerOptions
             {
                 scenes = new[] { ScenePath },
-                locationPathName = "Build/Android/SHOHIN-CITY-DRIVE.apk",
+                locationPathName = Path.Combine(buildFolder, "SHOHIN-CITY-DRIVE.apk"),
                 target = BuildTarget.Android,
                 options = BuildOptions.None
             };
