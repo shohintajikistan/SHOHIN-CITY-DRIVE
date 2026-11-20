@@ -144,7 +144,7 @@ namespace SHOHIN.Editor
         private static VehicleController BuildVehicle()
         {
             var root = new GameObject("SHOHIN Test Vehicle - replace visuals with licensed car model");
-            root.transform.position = new Vector3(0f, 1.05f, -12f);
+            root.transform.position = new Vector3(0f, 0.28f, -12f);
             var rb = root.AddComponent<Rigidbody>();
             rb.mass = 1450f;
             rb.drag = 0.015f;
