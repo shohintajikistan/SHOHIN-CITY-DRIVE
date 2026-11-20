@@ -4,363 +4,166 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#071c16"><title>SHOHIN CITY DRIVE</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#202b2c;color:#fff;font-family:Arial,system-ui,sans-serif;touch-action:none}canvas{display:block}#game{position:fixed;inset:0}
-.hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:calc(12px + env(safe-area-inset-top)) 14px 30px;background:linear-gradient(#07110fe8,transparent);pointer-events:none}.brand{font-weight:950;font-size:18px;letter-spacing:2px;color:#baf05b}.sub{font-size:9px;letter-spacing:2px;color:#d0ddd7;margin-top:3px}.stats{display:flex;gap:6px}.stat{min-width:70px;padding:8px 10px;text-align:center;background:#081713d9;border:1px solid #baf05b66;border-radius:12px;backdrop-filter:blur(12px)}.value{font-size:20px;font-weight:900;color:#baf05b;font-variant-numeric:tabular-nums}.label{font-size:8px;color:#c5d2cb;letter-spacing:1px}
-.controls{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:0;right:0;padding:0 14px;display:flex;justify-content:space-between;align-items:end;pointer-events:none}.cluster{display:flex;gap:9px;pointer-events:auto}.key{width:62px;height:62px;border:1px solid #baf05b88;border-radius:18px;background:linear-gradient(145deg,#1d3b32eF,#071c16ed);color:white;font-size:23px;font-weight:900;box-shadow:0 7px 18px #0008;touch-action:none;user-select:none}.key.down,.key:active{background:#baf05b;color:#071c16}.key.gas{height:78px;width:72px;font-size:13px;color:#baf05b}.key.hand{font-size:10px;color:#ffd88a}.topbtn{position:fixed;right:13px;top:104px;z-index:3;padding:9px 12px;border-radius:10px;border:1px solid #baf05b77;background:#071c16d9;color:#e6f3e9;font-size:10px}.topbtn.second{right:auto;left:13px}
-#menu{position:fixed;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at center,#23483cdd,#050c0af5 76%)}.panel{width:min(420px,100%);padding:26px 22px;text-align:center;border-radius:24px;border:1px solid #baf05b66;background:linear-gradient(145deg,#0b3025f7,#06140ff7);box-shadow:0 25px 90px #000c;backdrop-filter:blur(18px)}.crown{font-size:42px;color:#e6c46a}.panel h1{margin:7px 0;color:#baf05b;font-size:25px;letter-spacing:1px}.panel p{font-size:13px;line-height:1.55;color:#d1ded6}.garage{display:flex;gap:8px;margin:16px 0}.carpick{flex:1;padding:11px 4px;border:1px solid #baf05b55;border-radius:12px;background:#10291f;color:white;font-size:11px;font-weight:800}.carpick.active{border:2px solid #baf05b;background:#1d5138;color:#eaffc7}.primary{width:100%;padding:15px;border:0;border-radius:13px;background:linear-gradient(90deg,#baf05b,#e3f6ad);color:#071c16;font-weight:950;font-size:15px;letter-spacing:1px}.note{font-size:10px!important;color:#8fa99a!important}
-#drift{position:fixed;top:93px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:900;color:#f8d98b;text-shadow:0 2px 8px #000;pointer-events:none;opacity:0;transition:opacity .2s}
-@media(max-width:390px){.key{width:54px;height:56px}.stats{gap:4px}.stat{min-width:56px;padding:7px 6px}.value{font-size:17px}.brand{font-size:16px}}
-#boot{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at center,#173d31 0%,#071c16 58%,#030907 100%);transition:opacity .45s ease,visibility .45s ease}#boot.done{opacity:0;visibility:hidden;pointer-events:none}.boot-panel{width:min(360px,100%);text-align:center}.boot-crown{font-size:48px;color:#e6c46a;line-height:1}.boot-name{margin-top:12px;color:#baf05b;font-size:22px;font-weight:950;letter-spacing:2px}.boot-sub{margin-top:6px;color:#b9c9c0;font-size:10px;letter-spacing:3px}.boot-track{height:7px;margin:28px 0 10px;border-radius:99px;background:#ffffff18;overflow:hidden;border:1px solid #baf05b44}.boot-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#087b53,#baf05b);box-shadow:0 0 18px #baf05b88;transition:width .2s ease}.boot-meta{display:flex;justify-content:space-between;color:#c6d6cd;font-size:11px;letter-spacing:1px}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101b1d;color:#fff;font-family:Arial,system-ui,sans-serif;touch-action:none}#renderCanvas{width:100%;height:100%;display:block;outline:0}
+#boot,#menu{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#183f32,#030907 78%);padding:22px}.panel{width:min(430px,100%);padding:26px 22px;text-align:center;border:1px solid #baf05b66;border-radius:24px;background:linear-gradient(145deg,#0b3025f5,#06140ff5);box-shadow:0 25px 90px #000c}.crown{font-size:42px;color:#e6c46a}.panel h1{font-size:25px;letter-spacing:1px;color:#baf05b;margin:8px 0}.panel p{font-size:13px;line-height:1.55;color:#d1ded6}.primary{width:100%;padding:15px;border:0;border-radius:13px;background:linear-gradient(90deg,#baf05b,#e3f6ad);color:#071c16;font-weight:950;font-size:15px;letter-spacing:1px}.sub{font-size:10px;letter-spacing:2px;color:#b8c9bf}
+#boot{z-index:20;transition:opacity .35s}#boot.hide{opacity:0;pointer-events:none}.track{height:6px;background:#ffffff20;border-radius:9px;margin-top:22px;overflow:hidden}.fill{height:100%;width:0;background:#baf05b;transition:width .2s}
+#hud{display:none;position:fixed;inset:0;pointer-events:none}.top{position:absolute;top:12px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start}.brand{font-weight:950;letter-spacing:2px;color:#baf05b;text-shadow:0 2px 7px #000}.small{font-size:9px;letter-spacing:2px;color:#d7e3dc}.stats{display:flex;gap:6px}.stat{background:#071c16cf;border:1px solid #baf05b66;border-radius:12px;padding:7px 10px;min-width:62px;text-align:center;backdrop-filter:blur(8px)}.num{font-size:20px;font-weight:900;color:#baf05b}.lab{font-size:8px;color:#c8d8ce;letter-spacing:1px}
+#map{position:absolute;top:65px;left:14px;width:112px;height:112px;border-radius:50%;border:2px solid #dcebe5aa;background:#071c16b8;box-shadow:0 3px 14px #0008}
+#speedo{position:absolute;right:15px;top:65px;width:116px;height:116px;border:5px solid #e5eee9;border-bottom-color:transparent;border-radius:50%;background:#071c16aa;display:grid;place-items:center;text-align:center}.speedbig{font-size:28px;font-weight:900}.speedunit{font-size:9px;letter-spacing:1px}
+#actions{position:absolute;right:14px;top:195px;display:flex;gap:8px;pointer-events:auto}.pill{border:1px solid #baf05b77;border-radius:12px;background:#071c16df;color:#fff;padding:9px 11px;font-weight:800}
+#controls{position:absolute;bottom:calc(15px + env(safe-area-inset-bottom));left:0;right:0;padding:0 16px;display:flex;align-items:end;justify-content:space-between;pointer-events:none}.cluster{display:flex;gap:9px;pointer-events:auto}.key{width:64px;height:64px;border-radius:19px;border:1px solid #d9eee0a8;background:linear-gradient(145deg,#ffffff42,#071c16dd);color:#fff;font-size:25px;font-weight:900;box-shadow:0 6px 20px #0008;touch-action:none;user-select:none}.key.down{background:#baf05b;color:#071c16}.key.gas{height:86px;width:76px;font-size:13px;color:#baf05b}.key.brake{height:68px;width:68px;font-size:11px}.key.hand{height:52px;width:65px;font-size:10px}
+#toast{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);font-weight:900;color:#f9dc8e;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .2s}
+@media(max-width:390px){.key{width:54px;height:57px}.key.gas{width:66px;height:77px}.stat{min-width:53px;padding:6px}.num{font-size:17px}#map{width:92px;height:92px}#speedo{width:100px;height:100px}}
 </style>
 </head>
-<body><div id="game"></div>
-<div id="boot"><div class="boot-panel"><div class="boot-crown">♛</div><div class="boot-name">SHOHIN TAJIKISTAN</div><div class="boot-sub">CITY DRIVE · 3D EXPERIENCE</div><div class="boot-track"><div class="boot-fill" id="bootFill"></div></div><div class="boot-meta"><span id="bootLabel">ЗАГРУЗКА ИГРОВОГО МИРА</span><strong id="bootPercent">0%</strong></div></div></div>
+<body>
+<canvas id="renderCanvas"></canvas>
+<div id="boot"><div class="panel"><div class="crown">♛</div><div class="brand" style="font-size:22px">SHOHIN TAJIKISTAN</div><div class="sub">CITY DRIVE · REAL 3D</div><div class="track"><div class="fill" id="loadFill"></div></div><p id="loadText">ЗАГРУЗКА ИГРОВОГО МИРА</p></div></div>
+<div id="menu" style="display:none"><div class="panel"><div class="crown">♛</div><h1>SHOHIN CITY DRIVE</h1><div class="sub">OPEN CITY · FREE DRIVE</div><p>Свободное вождение. Исследуй город, разгоняйся, тормози и объезжай транспорт.</p><button class="primary" id="start">НАЧАТЬ ВОЖДЕНИЕ</button><p class="sub">WASD / СТРЕЛКИ · TOUCH CONTROL</p></div></div>
+<div id="hud"><div class="top"><div><div class="brand">♛ SHOHIN</div><div class="small">CITY DRIVE · GT SPORT</div></div><div class="stats"><div class="stat"><div class="num" id="speed">0</div><div class="lab">KM/H</div></div><div class="stat"><div class="num" id="gear">N</div><div class="lab">GEAR</div></div></div></div><canvas id="map" width="220" height="220"></canvas><div id="speedo"><div><div class="speedbig" id="speedDial">0</div><div class="speedunit">KM/H</div><div class="lab">ABS · SPORT</div></div></div><div id="actions"><button class="pill" id="camera">КАМЕРА</button><button class="pill" id="pause">Ⅱ</button></div><div id="toast">TURBO BOOST</div><div id="controls"><div class="cluster"><button class="key" data-k="left">◀</button><button class="key" data-k="right">▶</button></div><div class="cluster"><button class="key hand" data-k="hand">РУЧНИК</button><button class="key brake" data-k="brake">ТОРМОЗ</button><button class="key gas" data-k="gas">ГАЗ ▲</button></div></div></div>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
 <script>
-(()=>{let p=0;const fill=document.getElementById('bootFill'),num=document.getElementById('bootPercent');const timer=setInterval(()=>{p=Math.min(88,p+(p<35?4:p<70?2:1));fill.style.width=p+'%';num.textContent=p+'%';if(p>=88)clearInterval(timer);},180);window.__shohinBootDone=()=>{clearInterval(timer);fill.style.width='100%';num.textContent='100%';document.getElementById('bootLabel').textContent='ГОТОВО';setTimeout(()=>document.getElementById('boot').classList.add('done'),180);};})();
-</script>
-<div class="hud"><div><div class="brand">♛ SHOHIN</div><div class="sub">GT 911 · CITY DRIVE</div></div><div class="stats"><div class="stat"><div class="value" id="speed">0</div><div class="label">KM/H</div></div><div class="stat"><div class="value" id="gear">N</div><div class="label">GEAR</div></div><div class="stat"><div class="value" id="driftScore">0</div><div class="label">DRIFT</div></div></div></div>
-<button class="topbtn second" id="pause">Ⅱ ПАУЗА</button><button class="topbtn" id="cameraBtn">КАМЕРА</button><div id="drift">DRIFT!</div>
-<div class="controls"><div class="cluster"><button class="key" data-key="left">◀</button><button class="key" data-key="right">▶</button></div><div class="cluster"><button class="key hand" data-key="hand">РУЧНИК</button><button class="key" data-key="brake">ТОРМОЗ</button><button class="key gas" data-key="gas">ГАЗ ▲</button></div></div>
-<div id="menu"><div class="panel"><div class="crown">♛</div><h1>SHOHIN CITY DRIVE</h1><div class="sub">OPEN CITY · DRIFT · PARKING</div><p>Свободное вождение по городу. Разгоняйся, проходи повороты в заносе и проверяй управление автомобилем.</p><div class="garage"><button class="carpick active" data-car="0">GT 911<br>GREEN</button><button class="carpick" data-car="1">GT 911<br>RED</button><button class="carpick" data-car="2">GT 911<br>BLUE</button></div><button class="primary" id="start">НАЧАТЬ ВОЖДЕНИЕ</button><p class="note">3D CITY · TOUCH CONTROL · FREE DRIVE</p></div></div>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
-<script type="module">
-import * as THREE from 'three';
-const $=id=>document.getElementById(id),host=$('game');
-const isMobile=/Android|iPhone|iPad/i.test(navigator.userAgent);
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bb4bd);scene.fog=new THREE.Fog(0x9bb4bd,145,300);
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,650);
-const renderer=new THREE.WebGLRenderer({antialias:!isMobile,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,isMobile?1.05:1.35));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xe8f4ff,0x424b43,1.55));
-const sun=new THREE.DirectionalLight(0xffe7c6,2.6);sun.position.set(-75,110,55);sun.castShadow=true;sun.shadow.mapSize.set(isMobile?1024:1536,isMobile?1024:1536);sun.shadow.camera.left=-110;sun.shadow.camera.right=110;sun.shadow.camera.top=110;sun.shadow.camera.bottom=-110;sun.shadow.camera.far=240;scene.add(sun);
-const geometryCache=new Map();
-function cachedGeometry(Type,...args){const key=Type.name+":"+JSON.stringify(args);let g=geometryCache.get(key);if(!g){g=new Type(...args);geometryCache.set(key,g)}return g}
-const mat=(c,r=.8,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
-let activeWorldGroup=null;function addWorld(o){(activeWorldGroup||scene).add(o);return o}
-function box(x,y,z,w,h,d,m,yaw=0){const o=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,w,h,d),m);o.position.set(x,y,z);o.rotation.y=yaw;o.castShadow=true;o.receiveShadow=true;addWorld(o);return o}
-function noiseTexture(base,spots,repeatX=1,repeatY=1){const c=document.createElement('canvas');c.width=512;c.height=512;const ctx=c.getContext('2d');ctx.fillStyle=base;ctx.fillRect(0,0,512,512);for(let i=0;i<18000;i++){const v=Math.random();ctx.fillStyle=v>.5?'rgba(255,255,255,.045)':'rgba(0,0,0,.07)';ctx.fillRect(Math.random()*512,Math.random()*512,1+Math.random()*2,1+Math.random()*2)}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(repeatX,repeatY);t.colorSpace=THREE.SRGBColorSpace;return t}
-const asphalt=new THREE.MeshStandardMaterial({map:noiseTexture('#343a3c',null,4,4),roughness:.96});
-const concrete=new THREE.MeshStandardMaterial({map:noiseTexture('#777d7c',null,5,5),roughness:.94});
-const ground=new THREE.Mesh(cachedGeometry(THREE.PlaneGeometry,560,560),concrete);ground.rotation.x=-Math.PI/2;ground.position.y=-.12;ground.receiveShadow=true;scene.add(ground);
-const roadMat=asphalt,white=mat(0xe5e6df,.85),yellow=mat(0xe5bd55,.8),curb=mat(0x9c9e98,.9);
-const roads=[];for(let v=-180;v<=180;v+=45)roads.push(v);
-for(const x of roads){const r=new THREE.Mesh(cachedGeometry(THREE.PlaneGeometry,18,390),roadMat);r.rotation.x=-Math.PI/2;r.position.set(x,.005,0);r.receiveShadow=true;scene.add(r);for(let z=-190;z<190;z+=12)box(x,.025,z,.14,.025,5.2,white)}
-for(const z of roads){const r=new THREE.Mesh(cachedGeometry(THREE.PlaneGeometry,390,18),roadMat);r.rotation.x=-Math.PI/2;r.position.set(0,.008,z);r.receiveShadow=true;scene.add(r);for(let x=-190;x<190;x+=12)box(x,.028,z,5.2,.025,.14,white)}
-// Sidewalks, curbs and painted parking bays.
-for(const x of roads)for(const side of [-1,1]){const p=new THREE.Mesh(cachedGeometry(THREE.PlaneGeometry,2.5,330),curb);p.rotation.x=-Math.PI/2;p.position.set(x+side*10.3,.025,0);scene.add(p)}
-for(const z of roads)for(const side of [-1,1]){const p=new THREE.Mesh(cachedGeometry(THREE.PlaneGeometry,330,2.5),curb);p.rotation.x=-Math.PI/2;p.position.set(0,.027,z+side*10.3);scene.add(p)}
-for(let x=-150;x<150;x+=7)for(const z of [-13.5,13.5])box(x,.04,z,4.7,.025,.12,white);
-// Buildings with facade bands, windows, balconies and rooftop equipment.
-const wallM=[mat(0xb8b2a5),mat(0xaaaeb0),mat(0xc8c0ad),mat(0x777f83),mat(0xd0c9bb)];
-const glassM=new THREE.MeshStandardMaterial({color:0x6e9da9,metalness:.62,roughness:.2,emissive:0x152b32,emissiveIntensity:.18});
-const trim=mat(0x4a5050,.55),roofM=mat(0x50575a,.9);
-function building(x,z,w,d,h,variant){
- const yaw=variant%2?Math.PI/2:0,body=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,w,h,d),wallM[variant%wallM.length]);body.position.set(x,h/2,z);body.rotation.y=yaw;body.castShadow=true;body.receiveShadow=true;addWorld(body);
- box(x,h+.18,z,w+.35,.28,d+.35,roofM,yaw);
- const floors=Math.max(2,Math.floor(h/3.1)),cols=Math.max(2,Math.floor(w/3.2));
- for(let f=0;f<floors;f++)for(let c=0;c<cols;c++){
-  const wx=x-w/2+(c+.5)*w/cols,wz=z-d/2-.035,wy=1.35+f*3.05;
-  const win=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,Math.max(.8,w/cols*.58),1.25,.08),glassM);win.position.set(wx,wy,wz);win.castShadow=true;addWorld(win);
-  box(wx,wy-.72,wz-.04,Math.max(.9,w/cols*.72),.09,.12,trim);
- }
- for(let f=1;f<floors;f++)box(x,h/2,z-d/2-.08,w,.12,.16,mat(0xe1ded3));
- if(h>15){const lift=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,w*.22,1.8,d*.2),trim);lift.position.set(x,h+1,z);addWorld(lift)}
- // Ground-floor storefronts and recessed entrances.
- box(x,.18,z-d/2-.12,w*.72,.36,.18,trim);
- for(let c=0;c<3;c++){const shop=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,w*.19,2.1,.1),glassM);shop.position.set(x-w*.27+c*w*.27,1.35,z-d/2-.15);addWorld(shop)}
-}
-let seed=7;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
-const buildingColliders=[],cityChunks=[];
-for(let gx=-4;gx<=3;gx++)for(let gz=-4;gz<=3;gz++){
- const x=gx*45+22.5+(rnd()-.5)*5,z=gz*45+22.5+(rnd()-.5)*5,w=16+rnd()*6,d=16+rnd()*6,h=9+rnd()*27,variant=Math.floor(rnd()*5);
- const detailed=new THREE.Group();activeWorldGroup=detailed;building(x,z,w,d,h,variant);activeWorldGroup=null;scene.add(detailed);
- const lowGroup=new THREE.Group();const lowBody=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,w,h,d),wallM[variant%wallM.length]);lowBody.position.set(x,h/2,z);lowBody.castShadow=false;lowBody.receiveShadow=false;lowGroup.add(lowBody);
- const lowRoof=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,w+.25,.22,d+.25),roofM);lowRoof.position.set(x,h+.11,z);lowGroup.add(lowRoof);lowGroup.visible=false;scene.add(lowGroup);
- cityChunks.push({x,z,detailed,lowGroup});
- buildingColliders.push({x,z,hx:(variant%2?d:w)/2+1.15,hz:(variant%2?w:d)/2+1.15});
-}
-// Street lights, trees, signs and parked vehicles as urban details.
-const poleM=mat(0x444b4c,.48,.65),lampM=new THREE.MeshStandardMaterial({color:0xfff1c8,emissive:0xffd98c,emissiveIntensity:1.4});
-for(let x=-135;x<=135;x+=45)for(let z=-135;z<=135;z+=45){if(Math.abs(x)<15&&Math.abs(z)<15)continue;
- const p=new THREE.Mesh(cachedGeometry(THREE.CylinderGeometry,.09,.14,6.5,10),poleM);p.position.set(x+12,3.25,z+12);p.castShadow=true;scene.add(p);
- const arm=new THREE.Mesh(cachedGeometry(THREE.CylinderGeometry,.06,.06,1.8,8),poleM);arm.rotation.z=Math.PI/2;arm.position.set(x+12.8,6.3,z+12);scene.add(arm);
- const lamp=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,.55,.18,.42),lampM);lamp.position.set(x+13.5,6.15,z+12);scene.add(lamp);
-}
-const trunk=mat(0x58452f),leaf=mat(0x426b4b);
-for(let i=0;i<100;i++){const x=(rnd()-.5)*360,z=(rnd()-.5)*360;if(roads.some(v=>Math.abs(x-v)<13||Math.abs(z-v)<13))continue;
- const t=new THREE.Mesh(cachedGeometry(THREE.CylinderGeometry,.18,.25,2.8,8),trunk);t.position.set(x,1.4,z);t.castShadow=true;scene.add(t);
- const crown=new THREE.Mesh(cachedGeometry(THREE.SphereGeometry,1.65,12,9),leaf);crown.scale.set(1,1.25,1);crown.position.set(x,3.4,z);crown.castShadow=true;scene.add(crown);
-}
-// Custom GT 911-style rear-engine sports coupe with rounded nose, sloping fastback roof and wide rear haunches.
-const colors=[0x087b53,0xc83229,0x2459a8];let selected=0,carPaint=new THREE.MeshPhysicalMaterial({color:colors[0],roughness:.2,metalness:.72,clearcoat:1,clearcoatRoughness:.075});
-const tireMat=mat(0x111416,.94),rimMat=mat(0xb9c2c3,.25,.82),darkMat=mat(0x171d20,.4,.35);
-const glassMat=new THREE.MeshPhysicalMaterial({color:0x83aeb9,metalness:.55,roughness:.12,transmission:.12,transparent:true,opacity:.9});
-const headMat=new THREE.MeshStandardMaterial({color:0xfff2cf,emissive:0xffd889,emissiveIntensity:1.3});
-const tailMat=new THREE.MeshStandardMaterial({color:0xff2525,emissive:0xc90000,emissiveIntensity:1.1});
-const car=new THREE.Group();scene.add(car);const carBody=new THREE.Group();car.add(carBody);const wheelParts=[];let rollX=0,rollZ=0,rollVelX=0,rollVelZ=0;
-function addCarMesh(g,m,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;carBody.add(o);return o}
-function carShape(points,depth,bevel){const s=new THREE.Shape();s.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)s.lineTo(points[i][0],points[i][1]);s.closePath();const g=new THREE.ExtrudeGeometry(s,{depth,bevelEnabled:true,bevelSegments:4,steps:1,bevelSize:bevel,bevelThickness:bevel});g.translate(0,0,-depth/2);g.rotateX(Math.PI/2);return g}
-// GT 911 body: rounded front, wide rear haunches and a low fastback roof.
-function roundedPlan(points,depth,bevel){
- const sh=new THREE.Shape();sh.moveTo(points[0][0],points[0][1]);
- for(let i=1;i<points.length;i++)sh.lineTo(points[i][0],points[i][1]);
- sh.closePath();
- const g=new THREE.ExtrudeGeometry(sh,{depth,bevelEnabled:true,bevelSegments:5,steps:1,bevelSize:bevel,bevelThickness:bevel,curveSegments:10});
- g.translate(0,0,-depth/2);g.rotateX(Math.PI/2);return g;
-}
-const bodyOutline=[
- [0,-2.08],[.58,-2.02],[.82,-1.82],[.91,-1.45],[.96,-.95],
- [1.02,-.25],[1.09,.72],[1.12,1.35],[.98,1.78],[.68,1.96],
- [0,2.0],[-.68,1.96],[-.98,1.78],[-1.12,1.35],[-1.09,.72],
- [-1.02,-.25],[-.96,-.95],[-.91,-1.45],[-.82,-1.82],[-.58,-2.02]
-];
-addCarMesh(roundedPlan(bodyOutline,.48,.12),carPaint,0,.72,0);
-// Lower dark diffuser and sculpted front/rear bumpers.
-addCarMesh(cachedGeometry(THREE.BoxGeometry,1.82,.16,3.35),darkMat,0,.48,.05);
-addCarMesh(cachedGeometry(THREE.BoxGeometry,1.86,.2,.22),carPaint,0,.66,-1.98);
-addCarMesh(cachedGeometry(THREE.BoxGeometry,1.94,.2,.25),carPaint,0,.65,1.88);
-addCarMesh(cachedGeometry(THREE.BoxGeometry,1.1,.16,.08),darkMat,0,.56,-2.08);
-addCarMesh(cachedGeometry(THREE.BoxGeometry,1.35,.18,.12),darkMat,0,.47,2.0);
-// Sloping 911 fastback cabin: domed glass canopy and dark window surrounds.
-const cabinBase=addCarMesh(cachedGeometry(THREE.BoxGeometry,1.52,.12,2.12),darkMat,0,1.02,-.02);
-const canopy=addCarMesh(cachedGeometry(THREE.SphereGeometry,1,32,20),glassMat,0,1.26,-.02);
-canopy.scale.set(.73,.42,1.12);
-const roof=addCarMesh(cachedGeometry(THREE.SphereGeometry,1,24,16),carPaint,0,1.57,.03);
-roof.scale.set(.56,.12,.72);
-// Windscreen and rear glass as sloped panels.
-const windscreen=addCarMesh(cachedGeometry(THREE.BoxGeometry,1.27,.055,.58),glassMat,0,1.37,-.72);
-windscreen.rotation.x=-.42;
-const rearGlass=addCarMesh(cachedGeometry(THREE.BoxGeometry,1.22,.055,.52),glassMat,0,1.36,.77);
-rearGlass.rotation.x=.43;
-// Side window pillars, mirrors and low side skirts.
-for(const x of [-.7,.7]){
- const pillar=addCarMesh(cachedGeometry(THREE.BoxGeometry,.075,.48,1.55),darkMat,x,1.35,.02);
- pillar.rotation.x=x>0?0:0;
- const mirror=addCarMesh(cachedGeometry(THREE.BoxGeometry,.23,.13,.32),carPaint,x*1.28,1.22,-.62);
- const sill=addCarMesh(cachedGeometry(THREE.BoxGeometry,.13,.2,2.05),darkMat,x,.5,.05);
- // Rear quarter air intake, a signature detail of a mid/rear-engine performance coupe.
- const intake=addCarMesh(cachedGeometry(THREE.BoxGeometry,.055,.22,.52),darkMat,x*1.36,.78,.93);
-}
-// Round LED-style headlights, front indicators and full-width rear light bar.
-for(const x of [-.68,.68]){
- const lamp=addCarMesh(cachedGeometry(THREE.CylinderGeometry,.17,.17,.07,24),headMat,x,.76,-1.91);
- lamp.rotation.x=Math.PI/2;
- const inner=addCarMesh(cachedGeometry(THREE.CylinderGeometry,.095,.095,.075,20),mat(0xffffff,.18),x,.76,-1.94);
- inner.rotation.x=Math.PI/2;
- const tail=addCarMesh(cachedGeometry(THREE.BoxGeometry,.42,.12,.07),tailMat,x,.78,1.91);
-}
-addCarMesh(cachedGeometry(THREE.BoxGeometry,1.55,.11,.07),tailMat,0,.79,1.91);
-// Rear engine cover vents and GT-style fixed rear wing.
-for(let i=0;i<7;i++){
- const vent=addCarMesh(cachedGeometry(THREE.BoxGeometry,.92,.035,.045),darkMat,0,.98,1.02+i*.085);
-}
-addCarMesh(cachedGeometry(THREE.BoxGeometry,1.86,.1,.36),darkMat,0,1.16,1.72);
-for(const x of [-.68,.68])addCarMesh(cachedGeometry(THREE.BoxGeometry,.09,.32,.12),rimMat,x,1.0,1.61);
-// Twin exhaust outlets.
-for(const x of [-.48,.48]){
- const exhaust=addCarMesh(cachedGeometry(THREE.CylinderGeometry,.105,.105,.18,16),rimMat,x,.48,1.98);
- exhaust.rotation.x=Math.PI/2;
-}
-// Realistic four-wheel assemblies: rubber tyres, alloy rims, spokes, brake discs and calipers.
-function makeWheel(x,z,front){
- const pivot=new THREE.Group();pivot.position.set(x,.48,z);carBody.add(pivot);
- const tire=new THREE.Mesh(cachedGeometry(THREE.TorusGeometry,.365,.105,18,36),tireMat);
- tire.rotation.y=Math.PI/2;pivot.add(tire);tire.castShadow=true;
- const sidewall=new THREE.Mesh(cachedGeometry(THREE.TorusGeometry,.285,.025,10,32),darkMat);
- sidewall.rotation.y=Math.PI/2;sidewall.position.x=x>0?.018:-.018;pivot.add(sidewall);
- const disc=new THREE.Mesh(cachedGeometry(THREE.CylinderGeometry,.265,.265,.055,32),mat(0x858b8c,.32,.8));
- disc.rotation.z=Math.PI/2;disc.position.x=x>0?-.015:.015;pivot.add(disc);
- const rim=new THREE.Group();pivot.add(rim);
- const barrel=new THREE.Mesh(cachedGeometry(THREE.CylinderGeometry,.245,.245,.075,32),rimMat);
- barrel.rotation.z=Math.PI/2;rim.add(barrel);
- const hub=new THREE.Mesh(cachedGeometry(THREE.CylinderGeometry,.085,.085,.09,24),darkMat);
- hub.rotation.z=Math.PI/2;rim.add(hub);
- for(let i=0;i<10;i++){
-  const a=i*Math.PI/5;
-  const spoke=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,.045,.205,.055),rimMat);
-  spoke.position.set(0,Math.cos(a)*.145,Math.sin(a)*.145);
-  spoke.rotation.x=a;rim.add(spoke);
- }
- const cap=new THREE.Mesh(cachedGeometry(THREE.CylinderGeometry,.052,.052,.095,24),mat(0xbaf05b,.2,.7));
- cap.rotation.z=Math.PI/2;rim.add(cap);
- const caliper=new THREE.Mesh(cachedGeometry(THREE.BoxGeometry,.105,.19,.105),mat(0xc53d31,.38,.35));
- caliper.position.set(0,.17,.18);pivot.add(caliper);
- wheelParts.push({pivot,tire,rim,front});
-}
-for(const x of [-.96,.96]){makeWheel(x,-1.28,true);makeWheel(x,1.28,false)}
-// Subtle wheel-arch lips and sculpted side skirts complete the sports-car silhouette.
-for(const x of [-1,1])for(const z of [-1.28,1.28]){
- const arch=addCarMesh(cachedGeometry(THREE.TorusGeometry,.405,.055,10,36,Math.PI),darkMat,x,.48,z);
- arch.rotation.z=Math.PI;arch.rotation.y=Math.PI/2;
-}
-// Premium GT 911 styling: sculpted bonnet, aerodynamic splitters, side blades and trim.
-const carbonMat=mat(0x111719,.34,.72),accentMat=mat(0xbaf05b,.3,.55);
-const hood=addCarMesh(cachedGeometry(THREE.SphereGeometry,1,32,18),carPaint,0,.82,-1.23);
-hood.scale.set(.72,.105,.67);
-for(const x of [-.52,.52]){
- const crease=addCarMesh(cachedGeometry(THREE.BoxGeometry,.025,.025,1.02),mat(0x315b4c,.4,.35),x,.84,-1.18);
- crease.rotation.y=x*.055;
- const vent=addCarMesh(cachedGeometry(THREE.BoxGeometry,.22,.035,.42),carbonMat,x*.95,.855,-1.52);
- for(let n=0;n<3;n++){
-  const slit=addCarMesh(cachedGeometry(THREE.BoxGeometry,.16,.018,.025),rimMat,x*.95,.878,-1.66+n*.09);
- }
-}
-// Deep front splitter with corner canards and rear diffuser fins.
-addCarMesh(cachedGeometry(THREE.BoxGeometry,2.02,.075,.34),carbonMat,0,.43,-2.04);
-for(const x of [-.86,.86]){
- const canard=addCarMesh(cachedGeometry(THREE.BoxGeometry,.24,.045,.48),carbonMat,x,.48,-1.82);
- canard.rotation.y=x*.22;
- const fin=addCarMesh(cachedGeometry(THREE.BoxGeometry,.07,.15,.32),carbonMat,x,.42,1.91);
-}
-for(let i=-2;i<=2;i++){
- const fin=addCarMesh(cachedGeometry(THREE.BoxGeometry,.045,.16,.42),carbonMat,i*.27,.39,1.84);
-}
-// Sculpted side blades and lower door accent line.
-for(const x of [-1,1]){
- const blade=addCarMesh(cachedGeometry(THREE.BoxGeometry,.16,.12,1.65),carbonMat,x,.43,.08);
- const line=addCarMesh(cachedGeometry(THREE.BoxGeometry,.025,.035,1.25),accentMat,x*1.012,.62,.05);
- const intakeFrame=addCarMesh(cachedGeometry(THREE.BoxGeometry,.045,.29,.62),carPaint,x*1.04,.79,.94);
- const intakeDark=addCarMesh(cachedGeometry(THREE.BoxGeometry,.035,.19,.46),carbonMat,x*1.065,.78,.94);
- for(let n=0;n<3;n++){
-  const fin=addCarMesh(cachedGeometry(THREE.BoxGeometry,.025,.025,.36),rimMat,x*1.085,.73+n*.055,.94);
- }
-}
-// Wide rear wing with curved-looking end plates and carbon supports.
-addCarMesh(cachedGeometry(THREE.BoxGeometry,1.92,.095,.42),carbonMat,0,1.28,1.72);
-for(const x of [-.69,.69]){
- const support=addCarMesh(cachedGeometry(THREE.BoxGeometry,.075,.32,.13),carbonMat,x,1.12,1.62);
- const endplate=addCarMesh(cachedGeometry(THREE.BoxGeometry,.055,.24,.36),carPaint,x*1.38,1.28,1.72);
-}
-// Mirrors with dark bases, door handles and small side indicators.
-for(const x of [-1,1]){
- const mirrorStem=addCarMesh(cachedGeometry(THREE.BoxGeometry,.11,.11,.24),carbonMat,x*1.22,1.16,-.59);
- const mirrorCap=addCarMesh(cachedGeometry(THREE.SphereGeometry,.14,16,12),carPaint,x*1.34,1.23,-.62);
- mirrorCap.scale.set(1,.65,1.25);
- const indicator=addCarMesh(cachedGeometry(THREE.BoxGeometry,.025,.035,.16),headMat,x*1.355,1.22,-.54);
- const handle=addCarMesh(cachedGeometry(THREE.BoxGeometry,.035,.045,.24),rimMat,x*1.01,.83,.28);
-}
-// Front Porsche-inspired light housings and a continuous rear light signature.
-for(const x of [-.67,.67]){
- const bezel=addCarMesh(cachedGeometry(THREE.SphereGeometry,.205,20,12),darkMat,x,.79,-1.84);
- bezel.scale.set(1,.38,.48);
- const led=addCarMesh(cachedGeometry(THREE.BoxGeometry,.28,.035,.07),headMat,x,.82,-1.91);
- const rearReflector=addCarMesh(cachedGeometry(THREE.BoxGeometry,.32,.055,.045),tailMat,x,.85,1.91);
-}
-// Small premium details: badge, grille mesh, exhaust surrounds and brake ducts.
-addCarMesh(cachedGeometry(THREE.BoxGeometry,.24,.035,.055),mat(0xe1c36b,.22,.8),0,.87,-1.96);
-addCarMesh(cachedGeometry(THREE.BoxGeometry,.88,.12,.045),carbonMat,0,.54,-2.09);
-for(const x of [-.55,.55]){
- const duct=addCarMesh(cachedGeometry(THREE.BoxGeometry,.3,.13,.055),carbonMat,x,.59,-2.075);
- const exhaustRing=addCarMesh(cachedGeometry(THREE.CylinderGeometry,.12,.12,.04,20),rimMat,x,.48,2.04);
- exhaustRing.rotation.x=Math.PI/2;
-}
-// Move the car geometry into a raised pivot so it rolls around its centre, not the ground.
-for(const part of carBody.children)part.position.y-=.55;
-carBody.position.y=.55;
-// Stream detailed city blocks near the player and use simplified LOD buildings farther away.
-let cityStreamClock=0;function updateCityStreaming(dt){cityStreamClock+=dt;if(cityStreamClock<.22)return;cityStreamClock=0;for(const chunk of cityChunks){const dx=car.position.x-chunk.x,dz=car.position.z-chunk.z,d=Math.hypot(dx,dz);const near=d<112,mid=d>=112&&d<205;chunk.detailed.visible=near;chunk.lowGroup.visible=mid}}
- // Player and driving physics.
-car.position.set(0,0,0);let heading=0,speed=0,slip=0,lateralSpeed=0,drift=0,started=false,paused=false,view=0,handbrake=false;
+(()=> {
+const $=id=>document.getElementById(id),canvas=$('renderCanvas');
+let engine,scene,camera,car,body,wheels=[],traffic=[],colliders=[],heading=0,speed=0,lateral=0,started=false,paused=false,camMode=0,boost=100,score=0;
 const keys={left:false,right:false,gas:false,brake:false,hand:false};
-document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;const on=e=>{e.preventDefault();keys[k]=true;b.classList.add('down')},off=e=>{e.preventDefault();keys[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',on);['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,off))});
-addEventListener('keydown',e=>{const map={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake',' ':'hand'};if(map[e.key])keys[map[e.key]]=true});
-addEventListener('keyup',e=>{const map={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake',' ':'hand'};if(map[e.key])keys[map[e.key]]=false});
-$('cameraBtn').onclick=()=>{view=(view+1)%3;$('cameraBtn').textContent=['КАМЕРА 3','КАМЕРА 2','КАМЕРА 1'][view]};
-document.querySelectorAll('[data-car]').forEach(b=>b.addEventListener('click',()=>{selected=Number(b.dataset.car);carPaint.color.setHex(colors[selected]);document.querySelectorAll('[data-car]').forEach(x=>x.classList.toggle('active',x===b))}));
-$('start').onclick=()=>{$('menu').style.display='none';started=true;paused=false;updateCityStreaming(1)};
-$('pause').onclick=()=>{if(!started)return;paused=!paused;$('pause').textContent=paused?'▶ ПРОДОЛЖИТЬ':'Ⅱ ПАУЗА'};
-const clock=new THREE.Clock();let driftTimer=0;
-function update(dt){
- updateCityStreaming(dt);
- const steer=(keys.left?1:0)-(keys.right?1:0);
- const hand=keys.hand,throttle=keys.gas?1:0,braking=keys.brake?1:0;
- // Engine, service brake and reverse: speed is measured in metres per second.
- if(throttle){
-  if(speed<0)speed=Math.min(0,speed+24*dt);
-  else speed=THREE.MathUtils.damp(speed,43,2.0,dt);
- }else if(braking){
-  if(speed>0)speed=Math.max(0,speed-30*dt);
-  else speed=Math.max(-9,speed-9*dt);
- }else speed=THREE.MathUtils.damp(speed,0,.48,dt);
- const speedFactor=Math.min(1,Math.abs(speed)/18);
- // Front-wheel steering follows a bicycle model: the car turns toward the steering input.
- const maxSteer=THREE.MathUtils.lerp(.52,.28,speedFactor);
- const steerAngle=steer*maxSteer;
- const wheelBase=2.56;
- const yawRate=(speed/wheelBase)*Math.tan(steerAngle);
- heading+=yawRate*dt;
- // Handbrake releases rear grip and creates controlled lateral momentum.
- const lateralTarget=hand&&Math.abs(speed)>5?steer*Math.abs(speed)*.34:0;
- lateralSpeed=THREE.MathUtils.damp(lateralSpeed,lateralTarget,hand?2.8:5.5,dt);
- if(!hand)lateralSpeed*=Math.exp(-1.25*dt);
- slip=THREE.MathUtils.damp(slip,Math.atan2(lateralSpeed,Math.max(2,Math.abs(speed))),5,dt);
- car.rotation.y=heading;
- const forward=new THREE.Vector3(Math.sin(heading),0,-Math.cos(heading));
- const side=new THREE.Vector3(Math.cos(heading),0,Math.sin(heading));
- const previous=car.position.clone();
- const travel=new THREE.Vector3().addScaledVector(forward,speed*dt).addScaledVector(side,lateralSpeed*dt);
- car.position.add(travel);
- car.position.x=THREE.MathUtils.clamp(car.position.x,-198,198);
- car.position.z=THREE.MathUtils.clamp(car.position.z,-198,198);
- // Buildings have solid collision boundaries; stop the car at the first contact.
- let hit=null;
- for(const b of buildingColliders){
-  const dx=Math.abs(car.position.x-b.x),dz=Math.abs(car.position.z-b.z);
-  if(dx<b.hx&&dz<b.hz){hit=b;break}
+const mobile=/Android|iPhone|iPad/i.test(navigator.userAgent);
+const mat=(name,color,rough=.7,metal=0)=>{const m=new BABYLON.StandardMaterial(name,scene);m.diffuseColor=BABYLON.Color3.FromHexString(color);m.specularColor=new BABYLON.Color3(.35,.35,.35);m.specularPower=64;m.alpha=1;return m};
+const v=(x,y,z)=>new BABYLON.Vector3(x,y,z);
+function box(name,pos,size,material,parent=scene){const m=BABYLON.MeshBuilder.CreateBox(name,{width:size[0],height:size[1],depth:size[2]},scene);m.position=pos;m.material=material;if(parent)m.parent=parent;m.isPickable=false;return m}
+function cyl(name,pos,diam,height,material,parent=scene){const m=BABYLON.MeshBuilder.CreateCylinder(name,{diameter:diam,height,tessellation:24},scene);m.position=pos;m.material=material;m.parent=parent;m.isPickable=false;return m}
+function makeCar(){
+ car=new BABYLON.TransformNode('player-car',scene);body=new BABYLON.TransformNode('car-body',scene);body.parent=car;
+ const paint=mat('deep emerald','#0a9b68',.22,.75),dark=mat('carbon','#101719',.35,.6),glass=mat('glass','#263f49',.14,.65),rubber=mat('rubber','#090b0c',.95),rim=mat('alloy','#c4c9c7',.22,.85),red=mat('tail lights','#ff1717',.25,.2),white=mat('headlights','#fff0c7',.2,.1);
+ // Low, wide sports-coupe silhouette: sculpted body, cabin, front and rear aero.
+ box('main chassis',v(0,.69,0),[1.95,.48,4.25],paint,body);
+ box('front hood',v(0,.87,-1.43),[1.82,.17,1.25],paint,body);
+ box('rear deck',v(0,.91,1.48),[1.9,.2,1.1],paint,body);
+ const cabin=BABYLON.MeshBuilder.CreateSphere('fastback cabin',{diameter:1,segments:24},scene);cabin.scaling=v(.78,.48,1.12);cabin.position=v(0,1.22,-.12);cabin.material=glass;cabin.parent=body;
+ const roof=box('roof',v(0,1.52,.02),[1.05,.13,1.12],paint,body);
+ for(const x of [-.78,.78]){
+  box('side skirt',v(x,.49,.08),[.13,.18,2.5],dark,body);
+  box('mirror',v(x*1.23,1.12,-.7),[.27,.13,.32],paint,body);
+  box('side intake',v(x*1.12,.78,1.02),[.08,.25,.55],dark,body);
  }
- if(hit){
-  const dx=Math.abs(car.position.x-hit.x),dz=Math.abs(car.position.z-hit.z);
-  if(dx/hit.hx>dz/hit.hz)car.position.x=previous.x;
-  else car.position.z=previous.z;
-  if(Math.abs(speed)>2){
-   speed*=-.16;
-   lateralSpeed*=.18;
-   rollVelX+=(Math.random()-.5)*Math.min(1.2,Math.abs(speed)*.06);
-   rollVelZ+=(Math.random()-.5)*Math.min(1.2,Math.abs(speed)*.06);
+ box('front splitter',v(0,.43,-2.13),[2.05,.08,.38],dark,body);
+ box('rear diffuser',v(0,.42,2.08),[1.85,.13,.38],dark,body);
+ box('rear wing',v(0,1.36,1.78),[2.08,.11,.42],dark,body);
+ for(const x of [-.72,.72]){
+  box('wing support',v(x,1.17,1.68),[.08,.35,.13],rim,body);
+  box('front lamp',v(x,.8,-2.06),[.42,.09,.09],white,body);
+  box('rear lamp',v(x,.8,2.09),[.48,.11,.08],red,body);
+ }
+ box('rear lightbar',v(0,.83,2.1),[.75,.055,.055],red,body);
+ for(const x of [-.55,.55])cyl('exhaust',v(x,.48,2.19),.19,.16,rim,body).rotation.x=Math.PI/2;
+ // Four independent wheel assemblies with visible alloy rims.
+ for(const x of [-.99,.99])for(const z of [-1.32,1.32]){
+  const pivot=new BABYLON.TransformNode('wheel pivot',scene);pivot.parent=body;pivot.position=v(x,.48,z);
+  const tire=BABYLON.MeshBuilder.CreateCylinder('performance tyre',{diameter:.82,height:.25,tessellation:32},scene);tire.rotation.z=Math.PI/2;tire.material=rubber;tire.parent=pivot;
+  const rimMesh=BABYLON.MeshBuilder.CreateCylinder('alloy rim',{diameter:.49,height:.27,tessellation:24},scene);rimMesh.rotation.z=Math.PI/2;rimMesh.material=rim;rimMesh.parent=pivot;
+  for(let i=0;i<8;i++){const a=i*Math.PI/4;const spoke=box('rim spoke',v(x>0?.145:-.145,Math.cos(a)*.17,Math.sin(a)*.17),[.045,.22,.045],rim,pivot);spoke.rotation.x=a}
+  wheels.push({pivot,front:z<0,tire,rimMesh});
+ }
+ return car;
+}
+function createCity(){
+ const ground=mat('concrete','#747b78',.96),road=mat('asphalt','#252c30',.98),line=mat('lane paint','#d9d9cf',.8),curb=mat('sidewalk','#a8aaa2',.9);
+ const g=box('city ground',v(0,-.18,0),[430,.25,430],ground);g.receiveShadows=true;
+ // 9 x 9 street grid with sidewalks and dashed lane markings.
+ const roads=[];for(let p=-180;p<=180;p+=45)roads.push(p);
+ for(const p of roads){
+  box('north south road',v(p,-.035,0),[17,.06,410],road);
+  box('east west road',v(0,-.03,p),[410,.06,17],road);
+  for(let z=-195;z<200;z+=13)box('lane dash',v(p,.005,z),[.13,.025,5.3],line);
+  for(let x=-195;x<200;x+=13)box('lane dash',v(x,.005,p),[5.3,.025,.13],line);
+  for(const s of [-1,1]){box('walkway',v(p+s*10.4,.015,0),[2.7,.1,400],curb);box('walkway',v(0,.018,p+s*10.4),[400,.1,2.7],curb)}
+ }
+ const walls=['#b9b5a9','#9ca9ad','#d1c7b5','#707b80','#c5c3ba','#a7a18f'];
+ let seed=13;const rand=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
+ const facade=mat('window glass','#365762',.18,.65),trim=mat('building trim','#50585a',.6,.2);
+ for(let gx=-4;gx<=3;gx++)for(let gz=-4;gz<=3;gz++){
+  const x=gx*45+22.5+(rand()-.5)*5,z=gz*45+22.5+(rand()-.5)*5,w=15+rand()*7,d=15+rand()*7,h=11+rand()*27;
+  const wall=mat('building '+gx+','+gz,walls[Math.floor(rand()*walls.length)],.82);
+  const b=box('building',v(x,h/2,z),[w,h,d],wall);b.receiveShadows=true;
+  colliders.push({x,z,hx:w/2+1.25,hz:d/2+1.25});
+  box('roof ledge',v(x,h+.12,z),[w+.3,.24,d+.3],trim);
+  const floors=Math.floor(h/3.1),cols=Math.max(2,Math.floor(w/3));
+  for(let f=0;f<floors;f++)for(let c=0;c<cols;c++){
+   const wx=x-w/2+(c+.5)*w/cols,wy=1.5+f*3.05;
+   box('window',v(wx,wy,z-d/2-.045),[Math.max(.75,w/cols*.58),1.25,.07],facade);
+   box('window sill',v(wx,wy-.69,z-d/2-.08),[Math.max(.85,w/cols*.68),.08,.12],trim);
   }
+  // Storefront glazing.
+  for(let c=0;c<3;c++)box('shopfront',v(x-w*.28+c*w*.28,1.3,z-d/2-.07),[w*.2,2.1,.08],facade);
  }
- // Body suspension/roll reacts to steering and collisions; camera never rolls with the car.
- const cornering=Math.max(-1,Math.min(1,yawRate*speed/18));
- rollVelZ+=(-cornering*.42-rollZ*8)*dt;
- rollVelX+=(-Math.sin(heading)*0-rollX*8)*dt;
- rollX+=rollVelX*dt;rollZ+=rollVelZ*dt;
- rollVelX*=Math.exp(-3.2*dt);rollVelZ*=Math.exp(-3.2*dt);
- if(Math.abs(rollX)<.008&&Math.abs(rollVelX)<.02){rollX=0;rollVelX=0}
- if(Math.abs(rollZ)<.008&&Math.abs(rollVelZ)<.02){rollZ=0;rollVelZ=0}
- carBody.rotation.set(rollX,0,rollZ);
- carBody.position.y=Math.max(.55,.55+Math.abs(rollZ)*.2);
- // All four wheels spin with road speed; only the front wheels steer.
- for(const w of wheelParts){
-  w.tire.rotation.x-=speed*dt/.43;
-  w.rim.rotation.x-=speed*dt/.43;
-  if(w.front)w.pivot.rotation.y=THREE.MathUtils.damp(w.pivot.rotation.y,steerAngle,12,dt);
- }
- const drifting=hand&&Math.abs(speed)>7&&Math.abs(steer)>.05;
- if(drifting){drift+=Math.abs(speed)*dt*2.2;driftTimer=.3;$('drift').style.opacity=1}
- else{driftTimer=Math.max(0,driftTimer-dt);if(driftTimer===0)$('drift').style.opacity=0}
- $('speed').textContent=Math.round(Math.abs(speed)*3.6);
- $('gear').textContent=speed<-.5?'R':Math.abs(speed)<.5?'N':speed<13?'1':speed<24?'2':speed<34?'3':'4';
- $('driftScore').textContent=Math.floor(drift);
+ const trunk=mat('tree bark','#59452e'),leaves=mat('tree leaves','#426b4b');
+ for(let i=0;i<90;i++){const x=(rand()-.5)*360,z=(rand()-.5)*360;if(roads.some(p=>Math.abs(x-p)<13||Math.abs(z-p)<13))continue;cyl('tree trunk',v(x,1.35,z),.35,2.7,trunk);const crown=BABYLON.MeshBuilder.CreateSphere('tree crown',{diameter:3.2,segments:8},scene);crown.position=v(x,3.35,z);crown.material=leaves}
+ const pole=mat('street lamp','#454c4c',.45,.6),lamp=mat('lamp glow','#fff0c5',.2);
+ for(let x=-135;x<=135;x+=45)for(let z=-135;z<=135;z+=45){cyl('lamp post',v(x+12,3.1,z+12),.15,6.2,pole);box('lamp arm',v(x+12.7,6.1,z+12),[1.5,.08,.08],pole);box('lamp head',v(x+13.45,6,z+12),[.5,.16,.36],lamp)}
 }
-function cameraUpdate(dt){
- // Chase camera stays behind the car's actual heading and remains horizon-level.
- const forward=new THREE.Vector3(Math.sin(heading),0,-Math.cos(heading));
- let desired,target;
- if(view===0){
-  desired=car.position.clone().addScaledVector(forward,-8).add(new THREE.Vector3(0,3.7,0));
-  target=car.position.clone().addScaledVector(forward,2).add(new THREE.Vector3(0,1.05,0));
- }else if(view===1){
-  desired=car.position.clone().addScaledVector(forward,-13).add(new THREE.Vector3(0,6.8,0));
-  target=car.position.clone().addScaledVector(forward,2).add(new THREE.Vector3(0,.8,0));
- }else{
-  desired=car.position.clone().addScaledVector(forward,1.5).add(new THREE.Vector3(0,1.65,0));
-  target=car.position.clone().addScaledVector(forward,19).add(new THREE.Vector3(0,1.2,0));
+function createTraffic(){
+ const colors=['#b8c0c1','#202b30','#9d3a30','#65766b','#d3c8a6'];
+ for(let i=0;i<12;i++){
+  const node=new BABYLON.TransformNode('traffic car',scene);
+  const paint=mat('traffic paint '+i,colors[i%colors.length],.3,.45);
+  box('traffic body',v(0,.62,0),[1.7,.55,3.5],paint,node);
+  const cab=BABYLON.MeshBuilder.CreateBox('traffic cabin',{width:1.35,height:.58,depth:1.65},scene);cab.position=v(0,1.08,-.1);cab.material=mat('traffic glass '+i,'#3b5661',.18,.5);cab.parent=node;
+  for(const x of [-.86,.86])for(const z of [-1.12,1.12]){const w=BABYLON.MeshBuilder.CreateCylinder('traffic wheel',{diameter:.58,height:.2,tessellation:16},scene);w.rotation.z=Math.PI/2;w.position=v(x,.39,z);w.material=mat('traffic rubber',' #101214'.trim(),.9);w.parent=node}
+  const lane=(i%4),roadPos=-135+Math.floor(i/4)*90;node.position=v(lane<2?roadPos:roadPos,lane<2?0:0,lane<2?-160+i*11:roadPos);
+  const horizontal=lane>=2;node.metadata={horizontal,dir:i%2?1:-1,road:roadPos};if(horizontal)node.rotation.y=Math.PI/2;
+  traffic.push(node);
  }
- camera.position.lerp(desired,1-Math.exp(-5*dt));
- camera.up.set(0,1,0);
- camera.lookAt(target);
 }
-function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);if(started&&!paused)update(dt);cameraUpdate(dt);renderer.render(scene,camera)}
-camera.position.set(0,5,11);camera.lookAt(0,0,0);animate();
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,isMobile?1.05:1.35));renderer.setSize(innerWidth,innerHeight)});
-window.__shohinBootDone?.();
-</script></body></html>
+function drawMap(){const c=$('map').getContext('2d');c.clearRect(0,0,220,220);c.fillStyle='#24332f';c.fillRect(0,0,220,220);c.strokeStyle='#89958b';c.lineWidth=7;for(let p=0;p<220;p+=27){c.beginPath();c.moveTo(p,0);c.lineTo(p,220);c.stroke();c.beginPath();c.moveTo(0,p);c.lineTo(220,p);c.stroke()}c.fillStyle='#baf05b';c.beginPath();c.arc(110+car.position.x*.38,110+car.position.z*.38,6,0,Math.PI*2);c.fill();c.save();c.translate(110+car.position.x*.38,110+car.position.z*.38);c.rotate(-heading);c.fillStyle='#fff';c.beginPath();c.moveTo(0,-12);c.lineTo(-7,8);c.lineTo(7,8);c.fill();c.restore()}
+function init(){
+ engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:true,antialias:!mobile},true);
+ scene=new BABYLON.Scene(engine);scene.clearColor=new BABYLON.Color4(.57,.72,.79,1);scene.fogMode=BABYLON.Scene.FOGMODE_EXP2;scene.fogDensity=.0017;scene.fogColor=new BABYLON.Color3(.57,.72,.79);
+ const hemi=new BABYLON.HemisphericLight('sky',v(0,1,0),scene);hemi.intensity=1.05;hemi.groundColor=new BABYLON.Color3(.25,.27,.23);
+ const sun=new BABYLON.DirectionalLight('sun',v(-.55,-1,.35),scene);sun.position=v(-70,110,-45);sun.intensity=2.1;
+ const shadows=new BABYLON.ShadowGenerator(mobile?1024:1536,sun);shadows.useBlurExponentialShadowMap=true;shadows.blurKernel=16;
+ createCity();makeCar();createTraffic();
+ for(const m of scene.meshes){if(m.name==='building'||m.name==='main chassis'||m.name==='front hood'||m.name==='rear deck'||m.name==='roof')shadows.addShadowCaster(m)}
+ camera=new BABYLON.FollowCamera('chase',v(0,5,12),scene);camera.lockedTarget=car;camera.radius=10;camera.heightOffset=4;camera.rotationOffset=180;camera.cameraAcceleration=.045;camera.maxCameraSpeed=18;scene.activeCamera=camera;
+ scene.onBeforeRenderObservable.add(()=>{
+  const dt=Math.min(engine.getDeltaTime()/1000,.04);if(started&&!paused)update(dt);
+  if(car){if(camMode===0){camera.radius=10;camera.heightOffset=3.6;camera.rotationOffset=180}else if(camMode===1){camera.radius=15;camera.heightOffset=6;camera.rotationOffset=180}else{camera.radius=6;camera.heightOffset=2.4;camera.rotationOffset=180}}
+ });
+ engine.runRenderLoop(()=>{if(scene)scene.render()});
+ addEventListener('resize',()=>engine.resize());
+}
+function update(dt){
+ const steer=(keys.left?1:0)-(keys.right?1:0),hand=keys.hand;
+ if(keys.gas){if(speed<0)speed=Math.min(0,speed+25*dt);else speed=Math.min(48,speed+18*dt)}
+ else if(keys.brake){if(speed>0)speed=Math.max(0,speed-29*dt);else speed=Math.max(-8,speed-10*dt)}
+ else speed*=Math.exp(-.65*dt);
+ if(hand&&Math.abs(speed)>7){lateral+=steer*Math.abs(speed)*.32*dt;score+=Math.abs(speed)*dt*.4;$('toast').style.opacity=1}else{$('toast').style.opacity=0;lateral*=Math.exp(-2.8*dt)}
+ const steerAngle=steer*BABYLON.Scalar.Lerp(.48,.25,Math.min(1,Math.abs(speed)/24));
+ heading+=(speed/2.8)*Math.tan(steerAngle)*dt;
+ car.rotation.y=heading;
+ const forward=v(Math.sin(heading),0,Math.cos(heading)),side=v(Math.cos(heading),0,-Math.sin(heading));
+ const old=car.position.clone();car.position.addInPlace(forward.scale(speed*dt));car.position.addInPlace(side.scale(lateral*dt));
+ car.position.x=BABYLON.Scalar.Clamp(car.position.x,-198,198);car.position.z=BABYLON.Scalar.Clamp(car.position.z,-198,198);
+ for(const b of colliders){if(Math.abs(car.position.x-b.x)<b.hx&&Math.abs(car.position.z-b.z)<b.hz){car.position.copyFrom(old);speed*=-.12;lateral*=.15;break}}
+ for(const w of wheels){w.pivot.rotation.y=w.front?steerAngle:0;w.pivot.rotation.x-=speed*dt/.41}
+ body.rotation.z=BABYLON.Scalar.Lerp(body.rotation.z,-steer*speed*.0035,Math.min(1,dt*5));
+ body.position.y=.03+Math.sin(performance.now()*.012)*Math.min(.025,Math.abs(speed)*.0007);
+ for(const t of traffic){const horizontal=t.metadata.horizontal,dir=t.metadata.dir;if(horizontal){t.position.x+=dir*dt*8;if(t.position.x>190)t.position.x=-190;if(t.position.x< -190)t.position.x=190}else{t.position.z+=dir*dt*8;if(t.position.z>190)t.position.z=-190;if(t.position.z< -190)t.position.z=190}}
+ const km=Math.round(Math.abs(speed)*3.6);$('speed').textContent=km;$('speedDial').textContent=km;$('gear').textContent=speed<-.5?'R':Math.abs(speed)<.5?'N':speed<15?'1':speed<28?'2':speed<40?'3':'4';
+ drawMap();
+}
+function bindControls(){
+ document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;const on=e=>{e.preventDefault();keys[k]=true;b.classList.add('down')},off=e=>{e.preventDefault();keys[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',on);['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,off))});
+ addEventListener('keydown',e=>{const map={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake',' ':'hand'};if(map[e.key])keys[map[e.key]]=true});
+ addEventListener('keyup',e=>{const map={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake',' ':'hand'};if(map[e.key])keys[map[e.key]]=false});
+ $('start').onclick=()=>{$('menu').style.display='none';$('hud').style.display='block';started=true};
+ $('camera').onclick=()=>camMode=(camMode+1)%3;
+ $('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'▶':'Ⅱ'};
+}
+function boot(){
+ try{init();bindControls();let p=0;const timer=setInterval(()=>{p=Math.min(100,p+8);$('loadFill').style.width=p+'%';if(p>=100){clearInterval(timer);$('boot').classList.add('hide');setTimeout(()=>$('boot').style.display='none',400);$('menu').style.display='flex'}},90)}
+ catch(e){$('loadText').textContent='ОШИБКА: '+e.message;console.error(e)}
+}
+if(window.BABYLON)boot();else $('loadText').textContent='Не удалось загрузить Babylon.js. Проверь интернет.';
+})();
+</script>
+</body></html>
