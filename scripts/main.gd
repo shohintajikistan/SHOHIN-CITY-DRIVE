@@ -92,6 +92,12 @@ func _make_car() -> void:
 	car = CharacterBody3D.new()
 	car.position = Vector3(0, 0.7, 24)
 	add_child(car)
+	var car_collision := CollisionShape3D.new()
+	var car_shape := BoxShape3D.new()
+	car_shape.size = Vector3(2.0, 1.4, 4.0)
+	car_collision.shape = car_shape
+	car_collision.position.y = 0.55
+	car.add_child(car_collision)
 	var body := MeshInstance3D.new()
 	var bm := BoxMesh.new()
 	bm.size = Vector3(2.0, 0.65, 4.0)
