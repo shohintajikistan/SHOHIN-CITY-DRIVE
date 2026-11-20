@@ -1,0 +1,40 @@
+name: SHOHIN CITY DRIVE - Unity Android Build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "UnityProject/**"
+      - ".github/workflows/unity-android.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Build with Unity 6.3 LTS
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          projectPath: UnityProject
+          unityVersion: 6000.3.28f1
+          targetPlatform: Android
+          customParameters: -executeMethod SHOHIN.Editor.SHOHINProjectBuilder.BuildAndroid
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: SHOHIN-CITY-DRIVE-Android
+          path: UnityProject/Build/Android/*.apk
+          if-no-files-found: warn
+          retention-days: 14
