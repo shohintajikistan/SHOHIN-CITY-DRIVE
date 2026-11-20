@@ -68,6 +68,7 @@ namespace SHOHIN.Editor
             pipeline.supportsCameraDepthTexture = false;
             pipeline.supportsCameraOpaqueTexture = false;
             pipeline.supportsDynamicBatching = true;
+            pipeline.useSRPBatcher = true;
             EditorUtility.SetDirty(pipeline);
             GraphicsSettings.defaultRenderPipeline = pipeline;
             QualitySettings.renderPipeline = pipeline;
