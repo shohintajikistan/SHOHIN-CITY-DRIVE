@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SHOHIN CITY DRIVE — Babylon.js Test</title>
+<style>
+:root{--bg:#071c16;--panel:#0d3024;--green:#08a56c;--lime:#baf05b}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071c16;color:#fff;font-family:Arial,sans-serif;touch-action:none}
+#renderCanvas{width:100%;height:100%;display:block;outline:none}
+#top{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;gap:8px}
+.brand,.hud{background:#071c16d9;border:1px solid #08a56c88;border-radius:14px;padding:10px 13px;backdrop-filter:blur(8px);box-shadow:0 8px 25px #0005}
+.brand b{display:block;color:var(--lime);letter-spacing:2px;font-size:13px}.brand span{font-size:10px;color:#b6c9c0;letter-spacing:1px}
+.hud{text-align:right;min-width:105px}.hud strong{font-size:25px;color:var(--lime);font-variant-numeric:tabular-nums}.hud small{display:block;color:#b6c9c0;font-size:10px;letter-spacing:1px}
+#hint{position:fixed;top:88px;left:50%;transform:translateX(-50%);font-size:11px;color:#d7e8df;background:#071c16a8;padding:7px 11px;border-radius:20px;white-space:nowrap;pointer-events:none}
+#controls{position:fixed;bottom:18px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:end;pointer-events:none}
+.pad{display:flex;gap:10px;pointer-events:auto}.ctrl{width:66px;height:66px;border-radius:18px;border:1px solid #baf05b77;background:#0d3024d9;color:white;font-size:25px;font-weight:bold;box-shadow:0 5px 18px #0006;touch-action:none;user-select:none}
+.ctrl:active,.ctrl.down{background:#08a56c;color:#071c16;transform:scale(.96)}
+#pedals{display:flex;gap:10px;pointer-events:auto}.pedal{width:72px;height:76px;border-radius:18px;font-size:12px;letter-spacing:1px}.gas{border-color:#baf05b;background:#baf05b;color:#071c16}.brake{background:#381c1cdd;border-color:#e56b6b}
+#reset{position:fixed;right:14px;top:91px;border:1px solid #08a56c;background:#071c16cc;color:#fff;border-radius:10px;padding:8px 12px;font-size:11px}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:#071c16;z-index:5;transition:opacity .5s}
+#loading div{text-align:center;color:#baf05b;letter-spacing:3px;font-weight:bold}#loading small{display:block;color:#9bb6aa;letter-spacing:1px;margin-top:12px;font-weight:normal}
+@media(min-width:800px){.ctrl{width:76px;height:76px}.pedal{height:84px;width:82px}}
+</style>
+</head>
+<body>
+<canvas id="renderCanvas"></canvas>
+<div id="loading"><div>SHOHIN TAJIKISTAN<small>ЗАГРУЗКА 3D-СЦЕНЫ BABYLON.JS</small></div></div>
+<div id="top"><div class="brand"><b>SHOHIN CITY DRIVE</b><span>BABYLON.JS ENGINE TEST</span></div><div class="hud"><strong id="speed">0</strong><small>KM/H</small></div></div>
+<div id="hint">ТЕСТ УПРАВЛЕНИЯ · WASD / СЕНСОРНЫЕ КНОПКИ</div>
+<button id="reset">СБРОС МАШИНЫ</button>
+<div id="controls">
+ <div class="pad"><button class="ctrl" data-key="left">‹</button><button class="ctrl" data-key="right">›</button></div>
+ <div id="pedals"><button class="ctrl pedal brake" data-key="brake">ТОРМОЗ</button><button class="ctrl pedal gas" data-key="gas">ГАЗ</button></div>
+</div>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script>
+(()=> {
+const canvas=document.getElementById('renderCanvas'), engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:false, antialias:true});
+const mobile=matchMedia('(max-width:800px)').matches;
+engine.setHardwareScalingLevel(mobile?1.45:1);
+const scene=new BABYLON.Scene(engine);scene.clearColor=new BABYLON.Color4(.48,.68,.78,1);
+scene.fogMode=BABYLON.Scene.FOGMODE_EXP2;scene.fogDensity=.0026;scene.fogColor=new BABYLON.Color3(.48,.68,.78);
+const camera=new BABYLON.FollowCamera('follow',new BABYLON.Vector3(0,5,-12),scene);
+camera.radius=12;camera.heightOffset=4.2;camera.rotationOffset=180;camera.cameraAcceleration=.045;camera.maxCameraSpeed=18;camera.lowerRadiusLimit=8;camera.upperRadiusLimit=17;
+scene.activeCamera=camera;
+const hemi=new BABYLON.HemisphericLight('sky',new BABYLON.Vector3(0,1,0),scene);hemi.intensity=.82;
+const sun=new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(-.5,-1,.4),scene);sun.position=new BABYLON.Vector3(30,55,-20);sun.intensity=1.05;
+const mat=(name,color,metal=0,rough=.6)=>{let m=new BABYLON.StandardMaterial(name,scene);m.diffuseColor=BABYLON.Color3.FromHexString(color);m.specularColor=new BABYLON.Color3(.55,.55,.55);m.specularPower=64;m.alpha=1;return m};
+const roadMat=mat('asphalt','#252c30'),lineMat=mat('lane','#d7d9ce'),grassMat=mat('grass','#526d54'),concrete=mat('concrete','#9da7a4'),glass=mat('glass','#152c35',.4,.2),rubber=mat('rubber','#111315'),rim=mat('rim','#aeb9b6',.8,.25),bodyMat=mat('paint','#087b53',.7,.22),dark=mat('dark trim','#101b1b'),lamp=mat('LED','#e8f3d5'),red=mat('tail','#a51d20');
+const ground=BABYLON.MeshBuilder.CreateGround('ground',{width:700,height:700},scene);ground.material=grassMat;
+function box(name,w,h,d,x,y,z,material){let m=BABYLON.MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene);m.position.set(x,y,z);m.material=material;return m}
+box('road-main',18,.08,650,0,.04,0,roadMat);
+for(let z=-320;z<330;z+=12){box('lane-dash',.18,.025,5,0,.1,z,lineMat)}
+for(let x of [-9.3,9.3])box('road-edge',.35,.14,650,x,.09,0,concrete);
+for(let side of [-1,1]){
+ for(let z=-300;z<310;z+=42){
+  let w=12+((Math.abs(z*7)%9)),h=10+((Math.abs(z*3)%22)),d=15+((Math.abs(z*5)%12)),x=side*(18+w/2);
+  let b=box('city-building',w,h,d,x,h/2,z,concrete);
+  let wm=mat('facade-'+side+'-'+z,side<0?'#52636a':'#68736f');b.material=wm;
+  box('roofline',w+.3,.35,d+.3,x,h+.17,z,dark);
+  for(let yy=2;yy<h-1;yy+=3)for(let xx=-w/2+1;xx<w/2-1;xx+=3)box('window',.9,1.25,.06,x+xx,yy,z-d/2-.04,glass);
+ }
+}
+const car=new BABYLON.TransformNode('GT sport car',scene);
+function part(name,opts,parent,material){let m=BABYLON.MeshBuilder.CreateBox(name,opts,scene);m.parent=parent;m.material=material;return m}
+part('lower chassis',{width:2.05,height:.42,depth:4.25},car,bodyMat).position.y=.78;
+part('hood',{width:1.96,height:.34,depth:1.25},car,bodyMat).position.set(0,1.03,1.28);
+part('rear deck',{width:1.98,height:.34,depth:1.05},car,bodyMat).position.set(0,1.02,-1.48);
+part('cabin',{width:1.62,height:.76,depth:1.85},car,glass).position.set(0,1.48,-.08);
+part('roof',{width:1.57,height:.12,depth:1.1},car,bodyMat).position.set(0,1.88,-.12);
+part('front splitter',{width:2.12,height:.12,depth:.42},car,dark).position.set(0,.58,2.12);
+part('rear diffuser',{width:2.05,height:.14,depth:.38},car,dark).position.set(0,.56,-2.08);
+part('rear wing',{width:2.05,height:.12,depth:.42},car,dark).position.set(0,1.65,-2.02);
+for(let x of [-.76,.76]){part('wing support',{width:.09,height:.34,depth:.1},car,rim).position.set(x,1.48,-2.02)}
+for(let x of [-.78,.78]){
+ let h=part('headlight',{width:.36,height:.12,depth:.06},car,lamp);h.position.set(x,.94,1.96);
+ let t=part('taillight',{width:.43,height:.12,depth:.06},car,red);t.position.set(x,.93,-2.13);
+}
+const wheels=[];
+for(let x of [-1.02,1.02])for(let z of [-1.42,1.42]){
+ let pivot=new BABYLON.TransformNode('wheel pivot',scene);pivot.parent=car;pivot.position.set(x,.58,z);
+ let tire=BABYLON.MeshBuilder.CreateCylinder('tire',{diameter:1.05,height:.34,tessellation:24},scene);tire.rotation.z=Math.PI/2;tire.parent=pivot;tire.material=rubber;
+ let hub=BABYLON.MeshBuilder.CreateCylinder('alloy rim',{diameter:.62,height:.36,tessellation:16},scene);hub.rotation.z=Math.PI/2;hub.parent=pivot;hub.material=rim;
+ wheels.push({pivot,tire,hub,front:z>0});
+}
+car.position.set(0,0,0);camera.lockedTarget=car;
+const keys={left:false,right:false,gas:false,brake:false};
+document.querySelectorAll('[data-key]').forEach(btn=>{
+ const k=btn.dataset.key,down=e=>{e.preventDefault();keys[k]=true;btn.classList.add('down')},up=e=>{e.preventDefault();keys[k]=false;btn.classList.remove('down')};
+ btn.addEventListener('pointerdown',down);['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,up));
+});
+window.addEventListener('keydown',e=>{let k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')keys.left=true;if(k==='arrowright'||k==='d')keys.right=true;if(k==='arrowup'||k==='w')keys.gas=true;if(k==='arrowdown'||k==='s'||k===' ')keys.brake=true});
+window.addEventListener('keyup',e=>{let k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')keys.left=false;if(k==='arrowright'||k==='d')keys.right=false;if(k==='arrowup'||k==='w')keys.gas=false;if(k==='arrowdown'||k==='s'||k===' ')keys.brake=false});
+let speed=0,steer=0,yaw=0;
+function reset(){speed=0;steer=0;yaw=0;car.position.set(0,0,0);car.rotation.y=0}
+document.getElementById('reset').onclick=reset;
+scene.onBeforeRenderObservable.add(()=>{
+ const dt=Math.min(engine.getDeltaTime()/1000,.04);
+ if(keys.gas)speed=Math.min(speed+24*dt,48);else speed*=Math.pow(.985,dt*60);
+ if(keys.brake)speed=Math.max(speed-48*dt,-10);
+ let target=(keys.left?1:0)-(keys.right?1:0);steer+=(target-steer)*Math.min(1,dt*7);
+ let grip=Math.min(1,Math.abs(speed)/5);yaw+=steer*dt*(.7+grip*1.05)*(speed>=0?1:-1);
+ car.rotation.y=yaw;car.position.x+=Math.sin(yaw)*speed*dt;car.position.z+=Math.cos(yaw)*speed*dt;
+ if(Math.abs(car.position.x)>7.4){car.position.x=Math.sign(car.position.x)*7.4;speed*=.72}
+ wheels.forEach(w=>{w.tire.rotation.x+=speed*dt*1.9;if(w.front)w.pivot.rotation.y=steer*.42});
+ camera.radius=mobile?13:11;document.getElementById('speed').textContent=Math.round(Math.abs(speed)*3.6);
+});
+engine.runRenderLoop(()=>scene.render());
+window.addEventListener('resize',()=>engine.resize());
+setTimeout(()=>{let l=document.getElementById('loading');l.style.opacity='0';setTimeout(()=>l.remove(),550)},900);
+})();
+</script>
+</body></html>
