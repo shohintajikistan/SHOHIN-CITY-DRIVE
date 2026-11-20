@@ -226,13 +226,18 @@ namespace SHOHIN.Editor
             var cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
             cameraObject.transform.position = new Vector3(0f, 5f, -21f);
-            cameraObject.AddComponent<Camera>().fieldOfView = 66f;
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.fieldOfView = 66f;
+            camera.allowHDR = false;
+            camera.allowMSAA = true;
             cameraObject.AddComponent<AudioListener>();
             cameraObject.AddComponent<ChaseCamera>().SetTarget(target);
         }
 
         private static void BuildHUD(VehicleController vehicle)
         {
+            var settingsObject = new GameObject("SHOHIN Mobile Runtime Settings");
+            settingsObject.AddComponent<MobileGameSettings>();
             var canvasObject = new GameObject("SHOHIN Mobile HUD", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             Canvas canvas = canvasObject.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -332,6 +337,8 @@ namespace SHOHIN.Editor
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+            PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevel36;
+            PlayerSettings.colorSpace = ColorSpace.Linear;
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
             string buildFolder = Path.Combine(projectRoot, "Build", "Android");
             Directory.CreateDirectory(buildFolder);
