@@ -8,7 +8,7 @@ on:
       - ".github/workflows/build-car.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-glb:
@@ -27,6 +27,24 @@ jobs:
       - name: Build SHOHIN CAR model
         run: |
           blender --background --python scripts/build_car.py
+
+      - name: Copy model into game assets
+        run: |
+          mkdir -p assets/models
+          cp exports/shohin_car.glb assets/models/shohin_car.glb
+          ls -lh assets/models/shohin_car.glb
+
+      - name: Save generated model in repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/models/shohin_car.glb
+          if git diff --cached --quiet; then
+            echo "No model changes to commit."
+          else
+            git commit -m "Add generated SHOHIN CAR 3D model"
+            git push
+          fi
 
       - name: Upload GLB artifact
         uses: actions/upload-artifact@v4
