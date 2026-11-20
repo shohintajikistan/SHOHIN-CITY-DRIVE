@@ -1,179 +1,67 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#071c16"><title>SHOHIN CITY DRIVE</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#071c16">
+<title>SHOHIN HIGHWAY</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101b1d;color:#fff;font-family:Arial,system-ui,sans-serif;touch-action:none}#renderCanvas{width:100%;height:100%;display:block;outline:0}
-#boot,#menu{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#183f32,#030907 78%);padding:22px}.panel{width:min(430px,100%);padding:26px 22px;text-align:center;border:1px solid #baf05b66;border-radius:24px;background:linear-gradient(145deg,#0b3025f5,#06140ff5);box-shadow:0 25px 90px #000c}.crown{font-size:42px;color:#e6c46a}.panel h1{font-size:25px;letter-spacing:1px;color:#baf05b;margin:8px 0}.panel p{font-size:13px;line-height:1.55;color:#d1ded6}.primary{width:100%;padding:15px;border:0;border-radius:13px;background:linear-gradient(90deg,#baf05b,#e3f6ad);color:#071c16;font-weight:950;font-size:15px;letter-spacing:1px}.sub{font-size:10px;letter-spacing:2px;color:#b8c9bf}
-#boot{z-index:20;transition:opacity .35s}#boot.hide{opacity:0;pointer-events:none}.track{height:6px;background:#ffffff20;border-radius:9px;margin-top:22px;overflow:hidden}.fill{height:100%;width:0;background:#baf05b;transition:width .2s}
-#hud{display:none;position:fixed;inset:0;pointer-events:none}.top{position:absolute;top:12px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start}.brand{font-weight:950;letter-spacing:2px;color:#baf05b;text-shadow:0 2px 7px #000}.small{font-size:9px;letter-spacing:2px;color:#d7e3dc}.stats{display:flex;gap:6px}.stat{background:#071c16cf;border:1px solid #baf05b66;border-radius:12px;padding:7px 10px;min-width:62px;text-align:center;backdrop-filter:blur(8px)}.num{font-size:20px;font-weight:900;color:#baf05b}.lab{font-size:8px;color:#c8d8ce;letter-spacing:1px}
-#map{position:absolute;top:65px;left:14px;width:112px;height:112px;border-radius:50%;border:2px solid #dcebe5aa;background:#071c16b8;box-shadow:0 3px 14px #0008}
-#speedo{position:absolute;right:15px;top:65px;width:116px;height:116px;border:5px solid #e5eee9;border-bottom-color:transparent;border-radius:50%;background:#071c16aa;display:grid;place-items:center;text-align:center}.speedbig{font-size:28px;font-weight:900}.speedunit{font-size:9px;letter-spacing:1px}
-#actions{position:absolute;right:14px;top:195px;display:flex;gap:8px;pointer-events:auto}.pill{border:1px solid #baf05b77;border-radius:12px;background:#071c16df;color:#fff;padding:9px 11px;font-weight:800}
-#controls{position:absolute;bottom:calc(15px + env(safe-area-inset-bottom));left:0;right:0;padding:0 16px;display:flex;align-items:end;justify-content:space-between;pointer-events:none}.cluster{display:flex;gap:9px;pointer-events:auto}.key{width:64px;height:64px;border-radius:19px;border:1px solid #d9eee0a8;background:linear-gradient(145deg,#ffffff42,#071c16dd);color:#fff;font-size:25px;font-weight:900;box-shadow:0 6px 20px #0008;touch-action:none;user-select:none}.key.down{background:#baf05b;color:#071c16}.key.gas{height:86px;width:76px;font-size:13px;color:#baf05b}.key.brake{height:68px;width:68px;font-size:11px}.key.hand{height:52px;width:65px;font-size:10px}
-#toast{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);font-weight:900;color:#f9dc8e;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .2s}
-@media(max-width:390px){.key{width:54px;height:57px}.key.gas{width:66px;height:77px}.stat{min-width:53px;padding:6px}.num{font-size:17px}#map{width:92px;height:92px}#speedo{width:100px;height:100px}}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07110e;color:#fff;font-family:Arial,system-ui,sans-serif;touch-action:none}#game{width:100%;height:100%;display:block;outline:0}
+.layer{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at center,#173e30,#030806 78%);z-index:5}.panel{width:min(430px,100%);padding:28px 22px;text-align:center;border:1px solid #baf05b66;border-radius:24px;background:linear-gradient(145deg,#0b3025f5,#06140ff5);box-shadow:0 24px 80px #000b}.crown{font-size:38px;color:#e4c66e}.brand{color:#baf05b;font-weight:900;letter-spacing:2px}.panel h1{font-size:27px;margin:9px 0;color:#baf05b}.panel p{font-size:13px;line-height:1.55;color:#d0ddd5}.sub{font-size:10px;letter-spacing:2px;color:#b9c9bf}.btn{width:100%;padding:15px;border:0;border-radius:13px;background:linear-gradient(90deg,#baf05b,#e5f6b2);color:#071c16;font-weight:950;font-size:15px;letter-spacing:1px}
+#hud{display:none;position:fixed;inset:0;pointer-events:none}.top{position:absolute;top:13px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start}.stat{background:#071c16d9;border:1px solid #baf05b66;border-radius:12px;padding:7px 12px;text-align:center;min-width:72px}.num{font-size:21px;font-weight:900;color:#baf05b}.lab{font-size:8px;letter-spacing:1px;color:#d1ddd6}.right{display:flex;gap:7px}.action{pointer-events:auto;background:#071c16df;border:1px solid #baf05b77;border-radius:11px;color:#fff;padding:9px 12px;font-weight:800}
+#controls{position:absolute;bottom:calc(17px + env(safe-area-inset-bottom));left:0;right:0;padding:0 17px;display:flex;justify-content:space-between;align-items:end}.group{display:flex;gap:9px;pointer-events:auto}.key{width:65px;height:65px;border-radius:18px;border:1px solid #d9eee0a8;background:linear-gradient(145deg,#ffffff40,#071c16e8);color:#fff;font-size:25px;font-weight:900;touch-action:none;user-select:none}.key.down{background:#baf05b;color:#071c16}.key.gas{height:82px;width:76px;color:#baf05b;font-size:13px}.key.brake{height:68px;width:70px;font-size:11px}
+#message{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);font-size:25px;font-weight:900;color:#ffe28b;text-shadow:0 3px 12px #000;opacity:0;transition:opacity .2s;white-space:nowrap}
+@media(max-width:380px){.key{width:55px;height:57px}.key.gas{width:66px;height:74px}.stat{min-width:62px;padding:6px}.num{font-size:18px}}
 </style>
 </head>
 <body>
-<canvas id="renderCanvas"></canvas>
-<div id="boot"><div class="panel"><div class="crown">♛</div><div class="brand" style="font-size:22px">SHOHIN TAJIKISTAN</div><div class="sub">CITY DRIVE · REAL 3D</div><div class="track"><div class="fill" id="loadFill"></div></div><p id="loadText">ЗАГРУЗКА ИГРОВОГО МИРА</p></div></div>
-<div id="menu" style="display:none"><div class="panel"><div class="crown">♛</div><h1>SHOHIN CITY DRIVE</h1><div class="sub">OPEN CITY · FREE DRIVE</div><p>Свободное вождение. Исследуй город, разгоняйся, тормози и объезжай транспорт.</p><button class="primary" id="start">НАЧАТЬ ВОЖДЕНИЕ</button><p class="sub">WASD / СТРЕЛКИ · TOUCH CONTROL</p></div></div>
-<div id="hud"><div class="top"><div><div class="brand">♛ SHOHIN</div><div class="small">CITY DRIVE · GT SPORT</div></div><div class="stats"><div class="stat"><div class="num" id="speed">0</div><div class="lab">KM/H</div></div><div class="stat"><div class="num" id="gear">N</div><div class="lab">GEAR</div></div></div></div><canvas id="map" width="220" height="220"></canvas><div id="speedo"><div><div class="speedbig" id="speedDial">0</div><div class="speedunit">KM/H</div><div class="lab">ABS · SPORT</div></div></div><div id="actions"><button class="pill" id="camera">КАМЕРА</button><button class="pill" id="pause">Ⅱ</button></div><div id="toast">TURBO BOOST</div><div id="controls"><div class="cluster"><button class="key" data-k="left">◀</button><button class="key" data-k="right">▶</button></div><div class="cluster"><button class="key hand" data-k="hand">РУЧНИК</button><button class="key brake" data-k="brake">ТОРМОЗ</button><button class="key gas" data-k="gas">ГАЗ ▲</button></div></div></div>
+<canvas id="game"></canvas>
+<div id="menu" class="layer"><div class="panel"><div class="crown">♛</div><div class="brand">SHOHIN TAJIKISTAN</div><div class="sub">ARCADE HIGHWAY · 3D</div><h1>SHOHIN HIGHWAY</h1><p>Мчись по шоссе, перестраивайся между полосами, обходи трафик и собирай очки. Не сталкивайся с другими машинами.</p><button id="start" class="btn">НАЧАТЬ ЗАЕЗД</button><p class="sub">УПРАВЛЕНИЕ: СТРЕЛКИ / A D · МОБИЛЬНЫЕ КНОПКИ</p></div></div>
+<div id="error" class="layer" style="display:none"><div class="panel"><h1>НЕ УДАЛОСЬ ЗАПУСТИТЬ</h1><p id="errorText">Проверь подключение к интернету и обнови страницу.</p><button class="btn" onclick="location.reload()">ПОВТОРИТЬ</button></div></div>
+<div id="hud"><div class="top"><div><div class="brand">♛ SHOHIN</div><div class="sub">HIGHWAY RUSH</div></div><div class="right"><div class="stat"><div class="num" id="score">0</div><div class="lab">ОЧКИ</div></div><div class="stat"><div class="num" id="speed">0</div><div class="lab">КМ/Ч</div></div><button class="action" id="pause">Ⅱ</button></div></div><div id="message">СТОЛКНОВЕНИЕ!</div><div id="controls"><div class="group"><button class="key" data-k="left">◀</button><button class="key" data-k="right">▶</button></div><div class="group"><button class="key brake" data-k="brake">ТОРМОЗ</button><button class="key gas" data-k="gas">ГАЗ ▲</button></div></div></div>
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
 <script>
 (()=> {
-const $=id=>document.getElementById(id),canvas=$('renderCanvas');
-let engine,scene,camera,car,body,wheels=[],traffic=[],colliders=[],heading=0,speed=0,lateral=0,started=false,paused=false,camMode=0,boost=100,score=0;
-const keys={left:false,right:false,gas:false,brake:false,hand:false};
-const mobile=/Android|iPhone|iPad/i.test(navigator.userAgent);
-const mat=(name,color,rough=.7,metal=0)=>{const m=new BABYLON.StandardMaterial(name,scene);m.diffuseColor=BABYLON.Color3.FromHexString(color);m.specularColor=new BABYLON.Color3(.35,.35,.35);m.specularPower=64;m.alpha=1;return m};
-const v=(x,y,z)=>new BABYLON.Vector3(x,y,z);
-function box(name,pos,size,material,parent=scene){const m=BABYLON.MeshBuilder.CreateBox(name,{width:size[0],height:size[1],depth:size[2]},scene);m.position=pos;m.material=material;if(parent)m.parent=parent;m.isPickable=false;return m}
-function cyl(name,pos,diam,height,material,parent=scene){const m=BABYLON.MeshBuilder.CreateCylinder(name,{diameter:diam,height,tessellation:24},scene);m.position=pos;m.material=material;m.parent=parent;m.isPickable=false;return m}
-function makeCar(){
- car=new BABYLON.TransformNode('player-car',scene);body=new BABYLON.TransformNode('car-body',scene);body.parent=car;
- const paint=mat('deep emerald','#0a9b68',.22,.75),dark=mat('carbon','#101719',.35,.6),glass=mat('glass','#263f49',.14,.65),rubber=mat('rubber','#090b0c',.95),rim=mat('alloy','#c4c9c7',.22,.85),red=mat('tail lights','#ff1717',.25,.2),white=mat('headlights','#fff0c7',.2,.1);
- // Low, wide sports-coupe silhouette: sculpted body, cabin, front and rear aero.
- box('main chassis',v(0,.69,0),[1.95,.48,4.25],paint,body);
- box('front hood',v(0,.87,-1.43),[1.82,.17,1.25],paint,body);
- box('rear deck',v(0,.91,1.48),[1.9,.2,1.1],paint,body);
- const cabin=BABYLON.MeshBuilder.CreateSphere('fastback cabin',{diameter:1,segments:24},scene);cabin.scaling=v(.78,.48,1.12);cabin.position=v(0,1.22,-.12);cabin.material=glass;cabin.parent=body;
- const roof=box('roof',v(0,1.52,.02),[1.05,.13,1.12],paint,body);
- for(const x of [-.78,.78]){
-  box('side skirt',v(x,.49,.08),[.13,.18,2.5],dark,body);
-  box('mirror',v(x*1.23,1.12,-.7),[.27,.13,.32],paint,body);
-  box('side intake',v(x*1.12,.78,1.02),[.08,.25,.55],dark,body);
- }
- box('front splitter',v(0,.43,-2.13),[2.05,.08,.38],dark,body);
- box('rear diffuser',v(0,.42,2.08),[1.85,.13,.38],dark,body);
- box('rear wing',v(0,1.36,1.78),[2.08,.11,.42],dark,body);
- for(const x of [-.72,.72]){
-  box('wing support',v(x,1.17,1.68),[.08,.35,.13],rim,body);
-  box('front lamp',v(x,.8,-2.06),[.42,.09,.09],white,body);
-  box('rear lamp',v(x,.8,2.09),[.48,.11,.08],red,body);
- }
- box('rear lightbar',v(0,.83,2.1),[.75,.055,.055],red,body);
- for(const x of [-.55,.55])cyl('exhaust',v(x,.48,2.19),.19,.16,rim,body).rotation.x=Math.PI/2;
- // Four independent wheel assemblies with visible alloy rims.
- for(const x of [-.99,.99])for(const z of [-1.32,1.32]){
-  const pivot=new BABYLON.TransformNode('wheel pivot',scene);pivot.parent=body;pivot.position=v(x,.48,z);
-  const tire=BABYLON.MeshBuilder.CreateCylinder('performance tyre',{diameter:.82,height:.25,tessellation:32},scene);tire.rotation.z=Math.PI/2;tire.material=rubber;tire.parent=pivot;
-  const rimMesh=BABYLON.MeshBuilder.CreateCylinder('alloy rim',{diameter:.49,height:.27,tessellation:24},scene);rimMesh.rotation.z=Math.PI/2;rimMesh.material=rim;rimMesh.parent=pivot;
-  for(let i=0;i<8;i++){const a=i*Math.PI/4;const spoke=box('rim spoke',v(x>0?.145:-.145,Math.cos(a)*.17,Math.sin(a)*.17),[.045,.22,.045],rim,pivot);spoke.rotation.x=a}
-  wheels.push({pivot,front:z<0,tire,rimMesh});
- }
- return car;
+const $=id=>document.getElementById(id),canvas=$('game');
+let engine,scene,camera,player,playerWheels=[],traffic=[],roadParts=[],running=false,paused=false,dead=false,score=0,speed=0,worldZ=0,last=0,spawn=0;
+const input={left:false,right:false,gas:false,brake:false},lanes=[-2.8,0,2.8];
+const mat=(name,color,emissive)=>{const m=new BABYLON.StandardMaterial(name,scene);m.diffuseColor=BABYLON.Color3.FromHexString(color);if(emissive)m.emissiveColor=BABYLON.Color3.FromHexString(emissive);m.specularColor=new BABYLON.Color3(.22,.22,.22);return m};
+const vec=(x,y,z)=>new BABYLON.Vector3(x,y,z);
+function box(name,x,y,z,w,h,d,m,parent=scene){const o=BABYLON.MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene);o.position.set(x,y,z);o.material=m;if(parent)o.parent=parent;o.isPickable=false;return o}
+function makeCar(color='#0a9b68'){
+ const root=new BABYLON.TransformNode('car',scene),paint=mat('paint'+color,color),glass=mat('glass','#1b3038'),rubber=mat('rubber','#080a0b'),metal=mat('metal','#c2c8c4');
+ box('body',0,.66,0,1.65,.48,3.35,paint,root);box('hood',0,.88,-1.08,1.55,.15,1.05,paint,root);box('boot',0,.88,1.15,1.55,.15,.85,paint,root);box('roof',0,1.3,.05,1.15,.12,1.25,paint,root);box('windscreen',0,1.15,-.55,1.2,.42,.08,glass,root);box('rear glass',0,1.15,.68,1.2,.4,.08,glass,root);
+ for(const x of [-.84,.84]){box('skirt',x,.47,0,.12,.15,2.25,metal,root);box('lamp',x*.78,.78,-1.68,.28,.09,.06,mat('lamp'+x,'#fff0c5','#fff0c5'),root);box('tail',x*.78,.78,1.68,.32,.1,.06,mat('tail'+x,'#f21b20','#f21b20'),root)}
+ for(const x of [-.85,.85])for(const z of [-1.08,1.08]){const wh=new BABYLON.TransformNode('wheel',scene);wh.parent=root;wh.position.set(x,.43,z);const t=BABYLON.MeshBuilder.CreateCylinder('tyre',{diameter:.7,height:.22,tessellation:20},scene);t.rotation.z=Math.PI/2;t.material=rubber;t.parent=wh;const r=BABYLON.MeshBuilder.CreateCylinder('rim',{diameter:.4,height:.235,tessellation:20},scene);r.rotation.z=Math.PI/2;r.material=metal;r.parent=wh;if(root===player)playerWheels.push(wh)}
+ return root;
 }
-function createCity(){
- const ground=mat('concrete','#747b78',.96),road=mat('asphalt','#252c30',.98),line=mat('lane paint','#d9d9cf',.8),curb=mat('sidewalk','#a8aaa2',.9);
- const g=box('city ground',v(0,-.18,0),[430,.25,430],ground);g.receiveShadows=true;
- // 9 x 9 street grid with sidewalks and dashed lane markings.
- const roads=[];for(let p=-180;p<=180;p+=45)roads.push(p);
- for(const p of roads){
-  box('north south road',v(p,-.035,0),[17,.06,410],road);
-  box('east west road',v(0,-.03,p),[410,.06,17],road);
-  for(let z=-195;z<200;z+=26)box('lane dash',v(p,.005,z),[.13,.025,5.3],line);
-  for(let x=-195;x<200;x+=26)box('lane dash',v(x,.005,p),[5.3,.025,.13],line);
-  for(const s of [-1,1]){box('walkway',v(p+s*10.4,.015,0),[2.7,.1,400],curb);box('walkway',v(0,.018,p+s*10.4),[400,.1,2.7],curb)}
- }
- const walls=['#b9b5a9','#9ca9ad','#d1c7b5','#707b80','#c5c3ba','#a7a18f'];
- let seed=13;const rand=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
- const facade=mat('window glass','#365762',.18,.65),trim=mat('building trim','#50585a',.6,.2);
- for(let gx=-4;gx<=3;gx++)for(let gz=-4;gz<=3;gz++){
-  const x=gx*45+22.5+(rand()-.5)*5,z=gz*45+22.5+(rand()-.5)*5,w=15+rand()*7,d=15+rand()*7,h=11+rand()*27;
-  const wall=mat('building '+gx+','+gz,walls[Math.floor(rand()*walls.length)],.82);
-  const b=box('building',v(x,h/2,z),[w,h,d],wall);b.receiveShadows=true;
-  colliders.push({x,z,hx:w/2+1.25,hz:d/2+1.25});
-  box('roof ledge',v(x,h+.12,z),[w+.3,.24,d+.3],trim);
-  const floors=Math.min(3,Math.floor(h/7)),cols=2;
-  for(let f=0;f<floors;f++)for(let c=0;c<cols;c++){
-   const wx=x-w/2+(c+.5)*w/cols,wy=1.5+f*3.05;
-   box('window',v(wx,wy,z-d/2-.045),[Math.max(.75,w/cols*.58),1.25,.07],facade);
-   box('window sill',v(wx,wy-.69,z-d/2-.08),[Math.max(.85,w/cols*.68),.08,.12],trim);
-  }
-  // Storefront glazing.
-  for(let c=0;c<3;c++)box('shopfront',v(x-w*.28+c*w*.28,1.3,z-d/2-.07),[w*.2,2.1,.08],facade);
- }
- const trunk=mat('tree bark','#59452e'),leaves=mat('tree leaves','#426b4b');
- for(let i=0;i<36;i++){const x=(rand()-.5)*360,z=(rand()-.5)*360;if(roads.some(p=>Math.abs(x-p)<13||Math.abs(z-p)<13))continue;cyl('tree trunk',v(x,1.35,z),.35,2.7,trunk);const crown=BABYLON.MeshBuilder.CreateSphere('tree crown',{diameter:3.2,segments:8},scene);crown.position=v(x,3.35,z);crown.material=leaves}
- const pole=mat('street lamp','#454c4c',.45,.6),lamp=mat('lamp glow','#fff0c5',.2);
- for(let x=-90;x<=90;x+=90)for(let z=-90;z<=90;z+=90){cyl('lamp post',v(x+12,3.1,z+12),.15,6.2,pole);box('lamp arm',v(x+12.7,6.1,z+12),[1.5,.08,.08],pole);box('lamp head',v(x+13.45,6,z+12),[.5,.16,.36],lamp)}
+function addTraffic(z,lane){const colors=['#d52b31','#e5e7e5','#2477bc','#d5a52b','#222a31'];const c=makeCar(colors[Math.floor(Math.random()*colors.length)]);c.position.set(lanes[lane],0,z);c.scaling.setAll(.92);traffic.push(c)}
+function makeWorld(){
+ scene=new BABYLON.Scene(engine);scene.clearColor=new BABYLON.Color4(.48,.68,.79,1);scene.fogMode=BABYLON.Scene.FOGMODE_EXP2;scene.fogDensity=.0035;scene.fogColor=new BABYLON.Color3(.48,.68,.79);
+ const sun=new BABYLON.HemisphericLight('sky',vec(0,1,0),scene);sun.intensity=.9;const dir=new BABYLON.DirectionalLight('sun',vec(-.4,-1,.5),scene);dir.position=vec(20,40,-20);dir.intensity=.65;
+ const asphalt=mat('asphalt','#303638'),line=mat('lane line','#e6e4d4'),grass=mat('grass','#315a3b'),barrier=mat('barrier','#aeb5b1'),trunk=mat('trunk','#574330'),leaf=mat('leaf','#315f39');
+ box('ground',0,-.3,0,200, .4,500,grass);
+ box('highway',0,-.04,0,10,.18,500,asphalt);
+ for(const x of [-1.67,1.67])box('lane stripe',x,.06,0,.09,.025,500,line);
+ for(const x of [-5.3,5.3])box('road shoulder',x,.05,0,.38,.25,500,barrier);
+ for(let z=-240;z<260;z+=18){for(const x of [-1,1]){const b=box('dash',x*0,.07,z, .12,.025,7,line);b.position.x=x*0;}}
+ // roadside trees, poles and distant low buildings
+ for(let z=-230;z<250;z+=22)for(const side of [-1,1]){const x=side*(8+Math.random()*5);cylDummy(x,z);if(z%44===0){box('distant building',side*18,2,z,8,4,10,barrier)}}
+ function cylDummy(x,z){const stem=BABYLON.MeshBuilder.CreateCylinder('tree trunk',{diameter:.28,height:2.2},scene);stem.position.set(x,1,z);stem.material=trunk;const crown=BABYLON.MeshBuilder.CreateSphere('tree crown',{diameter:2.2,segments:7},scene);crown.position.set(x,2.5,z);crown.material=leaf;}
+ player=makeCar();player.position.set(0,0,-5);camera=new BABYLON.FollowCamera('chase',vec(0,5,12),scene);camera.lockedTarget=player;camera.radius=13;camera.heightOffset=5;camera.rotationOffset=180;camera.cameraAcceleration=.045;camera.maxCameraSpeed=8;scene.activeCamera=camera;
+ for(let i=0;i<8;i++)addTraffic(35+i*32,Math.floor(Math.random()*3));
+ return scene;
 }
-function createTraffic(){
- const colors=['#b8c0c1','#202b30','#9d3a30','#65766b','#d3c8a6'];
- for(let i=0;i<12;i++){
-  const node=new BABYLON.TransformNode('traffic car',scene);
-  const paint=mat('traffic paint '+i,colors[i%colors.length],.3,.45);
-  box('traffic body',v(0,.62,0),[1.7,.55,3.5],paint,node);
-  const cab=BABYLON.MeshBuilder.CreateBox('traffic cabin',{width:1.35,height:.58,depth:1.65},scene);cab.position=v(0,1.08,-.1);cab.material=mat('traffic glass '+i,'#3b5661',.18,.5);cab.parent=node;
-  for(const x of [-.86,.86])for(const z of [-1.12,1.12]){const w=BABYLON.MeshBuilder.CreateCylinder('traffic wheel',{diameter:.58,height:.2,tessellation:16},scene);w.rotation.z=Math.PI/2;w.position=v(x,.39,z);w.material=mat('traffic rubber',' #101214'.trim(),.9);w.parent=node}
-  const lane=(i%4),roadPos=-135+Math.floor(i/4)*90;node.position=v(lane<2?roadPos:roadPos,lane<2?0:0,lane<2?-160+i*11:roadPos);
-  const horizontal=lane>=2;node.metadata={horizontal,dir:i%2?1:-1,road:roadPos};if(horizontal)node.rotation.y=Math.PI/2;
-  traffic.push(node);
- }
-}
-function drawMap(){const c=$('map').getContext('2d');c.clearRect(0,0,220,220);c.fillStyle='#24332f';c.fillRect(0,0,220,220);c.strokeStyle='#89958b';c.lineWidth=7;for(let p=0;p<220;p+=27){c.beginPath();c.moveTo(p,0);c.lineTo(p,220);c.stroke();c.beginPath();c.moveTo(0,p);c.lineTo(220,p);c.stroke()}c.fillStyle='#baf05b';c.beginPath();c.arc(110+car.position.x*.38,110+car.position.z*.38,6,0,Math.PI*2);c.fill();c.save();c.translate(110+car.position.x*.38,110+car.position.z*.38);c.rotate(-heading);c.fillStyle='#fff';c.beginPath();c.moveTo(0,-12);c.lineTo(-7,8);c.lineTo(7,8);c.fill();c.restore()}
-function init(){
- engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:true,antialias:!mobile},true);
- scene=new BABYLON.Scene(engine);scene.clearColor=new BABYLON.Color4(.57,.72,.79,1);scene.fogMode=BABYLON.Scene.FOGMODE_EXP2;scene.fogDensity=.0017;scene.fogColor=new BABYLON.Color3(.57,.72,.79);
- const hemi=new BABYLON.HemisphericLight('sky',v(0,1,0),scene);hemi.intensity=1.05;hemi.groundColor=new BABYLON.Color3(.25,.27,.23);
- const sun=new BABYLON.DirectionalLight('sun',v(-.55,-1,.35),scene);sun.position=v(-70,110,-45);sun.intensity=2.1;
- const shadows=mobile?null:new BABYLON.ShadowGenerator(1024,sun);if(shadows){shadows.useBlurExponentialShadowMap=true;shadows.blurKernel=8;}
- createCity();makeCar();createTraffic();
- if(shadows)for(const m of scene.meshes){if(m.name==='building'||m.name==='main chassis'||m.name==='front hood'||m.name==='rear deck'||m.name==='roof')shadows.addShadowCaster(m)}
- camera=new BABYLON.FollowCamera('chase',v(0,5,12),scene);camera.lockedTarget=car;camera.radius=10;camera.heightOffset=4;camera.rotationOffset=180;camera.cameraAcceleration=.045;camera.maxCameraSpeed=18;scene.activeCamera=camera;
- scene.onBeforeRenderObservable.add(()=>{
-  const dt=Math.min(engine.getDeltaTime()/1000,.04);if(started&&!paused)update(dt);
-  if(car){if(camMode===0){camera.radius=10;camera.heightOffset=3.6;camera.rotationOffset=180}else if(camMode===1){camera.radius=15;camera.heightOffset=6;camera.rotationOffset=180}else{camera.radius=6;camera.heightOffset=2.4;camera.rotationOffset=180}}
- });
- engine.runRenderLoop(()=>{if(scene)scene.render()});
- addEventListener('resize',()=>engine.resize());
-}
-function update(dt){
- const steer=(keys.left?1:0)-(keys.right?1:0),hand=keys.hand;
- if(keys.gas){if(speed<0)speed=Math.min(0,speed+25*dt);else speed=Math.min(48,speed+18*dt)}
- else if(keys.brake){if(speed>0)speed=Math.max(0,speed-29*dt);else speed=Math.max(-8,speed-10*dt)}
- else speed*=Math.exp(-.65*dt);
- if(hand&&Math.abs(speed)>7){lateral+=steer*Math.abs(speed)*.32*dt;score+=Math.abs(speed)*dt*.4;$('toast').style.opacity=1}else{$('toast').style.opacity=0;lateral*=Math.exp(-2.8*dt)}
- const steerAngle=steer*BABYLON.Scalar.Lerp(.48,.25,Math.min(1,Math.abs(speed)/24));
- heading+=(speed/2.8)*Math.tan(steerAngle)*dt;
- car.rotation.y=heading;
- const forward=v(Math.sin(heading),0,Math.cos(heading)),side=v(Math.cos(heading),0,-Math.sin(heading));
- const old=car.position.clone();car.position.addInPlace(forward.scale(speed*dt));car.position.addInPlace(side.scale(lateral*dt));
- car.position.x=BABYLON.Scalar.Clamp(car.position.x,-198,198);car.position.z=BABYLON.Scalar.Clamp(car.position.z,-198,198);
- for(const b of colliders){if(Math.abs(car.position.x-b.x)<b.hx&&Math.abs(car.position.z-b.z)<b.hz){car.position.copyFrom(old);speed*=-.12;lateral*=.15;break}}
- for(const w of wheels){w.pivot.rotation.y=w.front?steerAngle:0;w.pivot.rotation.x-=speed*dt/.41}
- body.rotation.z=BABYLON.Scalar.Lerp(body.rotation.z,-steer*speed*.0035,Math.min(1,dt*5));
- body.position.y=.03+Math.sin(performance.now()*.012)*Math.min(.025,Math.abs(speed)*.0007);
- for(const t of traffic){const horizontal=t.metadata.horizontal,dir=t.metadata.dir;if(horizontal){t.position.x+=dir*dt*8;if(t.position.x>190)t.position.x=-190;if(t.position.x< -190)t.position.x=190}else{t.position.z+=dir*dt*8;if(t.position.z>190)t.position.z=-190;if(t.position.z< -190)t.position.z=190}}
- const km=Math.round(Math.abs(speed)*3.6);$('speed').textContent=km;$('speedDial').textContent=km;$('gear').textContent=speed<-.5?'R':Math.abs(speed)<.5?'N':speed<15?'1':speed<28?'2':speed<40?'3':'4';
- drawMap();
-}
-function bindControls(){
- document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;const on=e=>{e.preventDefault();keys[k]=true;b.classList.add('down')},off=e=>{e.preventDefault();keys[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',on);['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,off))});
- addEventListener('keydown',e=>{const map={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake',' ':'hand'};if(map[e.key])keys[map[e.key]]=true});
- addEventListener('keyup',e=>{const map={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake',' ':'hand'};if(map[e.key])keys[map[e.key]]=false});
- $('start').onclick=()=>{$('menu').style.display='none';$('hud').style.display='block';started=true};
- $('camera').onclick=()=>camMode=(camMode+1)%3;
- $('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'▶':'Ⅱ'};
-}
-function boot(){
- $('loadText').textContent='ПОДГОТОВКА 3D-МИРА…';
- $('loadFill').style.width='8%';
- setTimeout(()=>{
-  try{
-   $('loadText').textContent='СОЗДАНИЕ ГОРОДА И АВТОМОБИЛЯ…';
-   $('loadFill').style.width='35%';
-   init();bindControls();
-   $('loadFill').style.width='100%';
-   $('loadText').textContent='ГОТОВО';
-   setTimeout(()=>{$('boot').classList.add('hide');setTimeout(()=>$('boot').style.display='none',400);$('menu').style.display='flex'},350);
-  }catch(e){$('loadText').textContent='ОШИБКА: '+e.message;console.error(e)}
- },120);
-}
-if(window.BABYLON)boot();else $('loadText').textContent='Не удалось загрузить 3D-движок. Проверь интернет и открой страницу ещё раз.';
+function setGameOver(){dead=true;running=false;$('message').textContent='АВАРИЯ · '+Math.floor(score)+' ОЧКОВ';$('message').style.opacity=1;setTimeout(()=>{$('message').style.opacity=0;$('menu').style.display='flex';$('menu').querySelector('h1').textContent='ЗАЕЗД ОКОНЧЕН';$('menu').querySelector('p').textContent='Результат: '+Math.floor(score)+' очков. Попробуй проехать дальше.';$('start').textContent='ЕЩЁ ОДИН ЗАЕЗД';$('hud').style.display='none'},1100)}
+function reset(){score=0;speed=0;worldZ=0;dead=false;paused=false;player.position.set(0,0,-5);player.rotation.y=0;traffic.forEach(t=>t.dispose());traffic=[];for(let i=0;i<8;i++)addTraffic(35+i*32,Math.floor(Math.random()*3));$('score').textContent='0';$('speed').textContent='0'}
+function start(){if(!scene)return;reset();running=true;$('menu').style.display='none';$('hud').style.display='block';$('message').style.opacity=0;last=performance.now()}
+function frame(){if(!scene)return;const now=performance.now(),dt=Math.min((now-last)/1000,.04);last=now;if(running&&!paused&&!dead){const target=input.gas?42:input.brake?10:29;speed+=(target-speed)*Math.min(1,dt*1.7);if(input.left)player.position.x-=dt*5.3;if(input.right)player.position.x+=dt*5.3;player.position.x=Math.max(-3.55,Math.min(3.55,player.position.x));worldZ+=speed*dt*.72;player.position.y=.035+Math.sin(now*.012)*.018;player.rotation.z+=( (input.left?-.11:input.right?.11:0)-player.rotation.z)*dt*5;player.rotation.y+=( (input.left?-.07:input.right?.07:0)-player.rotation.y)*dt*4;for(const w of playerWheels)w.rotation.x+=speed*dt*.13;
+ traffic.forEach(t=>{t.position.z-=speed*dt*.8;if(t.position.z< -16){t.position.z=220+Math.random()*60;t.position.x=lanes[Math.floor(Math.random()*3)];score+=10;}if(Math.abs(t.position.z-player.position.z)<2.3&&Math.abs(t.position.x-player.position.x)<1.45){setGameOver()}});score+=dt*speed*.16;$('score').textContent=Math.floor(score);$('speed').textContent=Math.floor(speed*3.1);if(player.position.x<-3.5||player.position.x>3.5)setGameOver()}
+ scene.render();requestAnimationFrame(frame)}
+function bind(){document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;const on=e=>{e.preventDefault();input[k]=true;b.classList.add('down')},off=e=>{e.preventDefault();input[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('pointerleave',off)});window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')input.left=true;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')input.right=true;if(e.key==='ArrowUp'||e.key===' ')input.gas=true;if(e.key==='ArrowDown')input.brake=true});window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')input.left=false;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')input.right=false;if(e.key==='ArrowUp'||e.key===' ')input.gas=false;if(e.key==='ArrowDown')input.brake=false});}
+async function init(){try{if(!window.BABYLON)throw new Error('Библиотека 3D не загрузилась. Нужен интернет.');engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:false,antialias:false,powerPreference:'high-performance'});engine.setHardwareScalingLevel(Math.min(1.5,Math.max(1,window.devicePixelRatio||1)));makeWorld();bind();$('start').addEventListener('click',start);$('pause').addEventListener('click',()=>{paused=!paused;$('pause').textContent=paused?'▶':'Ⅱ'});window.addEventListener('resize',()=>engine.resize());requestAnimationFrame(frame)}catch(e){$('menu').style.display='none';$('error').style.display='flex';$('errorText').textContent=e.message||'Ошибка запуска 3D.'}}
+init();
 })();
 </script>
-</body></html>
+</body>
+</html>
