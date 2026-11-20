@@ -69,9 +69,10 @@ namespace SHOHIN.CityDrive
 
         private void FixedUpdate()
         {
+            float speedSteerLimit = Mathf.Lerp(maxSteerAngle, maxSteerAngle * 0.45f, Mathf.Clamp01(SpeedKph / 160f));
             currentSteerAngle = Mathf.MoveTowards(
                 currentSteerAngle,
-                steeringInput * maxSteerAngle,
+                steeringInput * speedSteerLimit,
                 steeringResponse * Time.fixedDeltaTime);
 
             float speedFactor = Mathf.Clamp01(1f - SpeedKph / maxSpeedKph);
@@ -96,7 +97,7 @@ namespace SHOHIN.CityDrive
         {
             if (wheel == null || visual == null) return;
             wheel.GetWorldPose(out Vector3 position, out Quaternion rotation);
-            visual.SetPositionAndRotation(position, rotation);
+            visual.SetPositionAndRotation(position, rotation * Quaternion.Euler(0f, 0f, 90f));
         }
     }
 }
