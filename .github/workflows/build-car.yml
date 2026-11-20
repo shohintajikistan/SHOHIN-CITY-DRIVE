@@ -21,8 +21,9 @@ jobs:
       - name: Install Blender
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender
+          sudo apt-get install -y blender python3-numpy
           blender --version
+          blender --background --python-expr "import numpy; print('NumPy available:', numpy.__version__)"
 
       - name: Build SHOHIN CAR model
         run: |
