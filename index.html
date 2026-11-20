@@ -84,8 +84,8 @@ const tireMat=mat(0x111416,.94),rimMat=mat(0xb9c2c3,.25,.82),darkMat=mat(0x171d2
 const glassMat=new THREE.MeshPhysicalMaterial({color:0x83aeb9,metalness:.55,roughness:.12,transmission:.12,transparent:true,opacity:.9});
 const headMat=new THREE.MeshStandardMaterial({color:0xfff2cf,emissive:0xffd889,emissiveIntensity:1.3});
 const tailMat=new THREE.MeshStandardMaterial({color:0xff2525,emissive:0xc90000,emissiveIntensity:1.1});
-const car=new THREE.Group();scene.add(car);const wheelParts=[];
-function addCarMesh(g,m,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;car.add(o);return o}
+const car=new THREE.Group();scene.add(car);const carBody=new THREE.Group();car.add(carBody);const wheelParts=[];let rollX=0,rollZ=0,rollVelX=0,rollVelZ=0;
+function addCarMesh(g,m,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;carBody.add(o);return o}
 function carShape(points,depth,bevel){const s=new THREE.Shape();s.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)s.lineTo(points[i][0],points[i][1]);s.closePath();const g=new THREE.ExtrudeGeometry(s,{depth,bevelEnabled:true,bevelSegments:4,steps:1,bevelSize:bevel,bevelThickness:bevel});g.translate(0,0,-depth/2);g.rotateX(Math.PI/2);return g}
 const bodyShape=[[-.91,-1.95],[.91,-1.95],[1.02,-1.42],[.94,-.82],[.82,.92],[.66,1.65],[-.66,1.65],[-.82,.92],[-.94,-.82],[-1.02,-1.42]];
 const body=addCarMesh(carShape(bodyShape,.62,.09),carPaint,0,.76,0);
@@ -108,7 +108,7 @@ const grille=addCarMesh(new THREE.BoxGeometry(.78,.23,.06),darkMat,0,.65,-1.96);
 const spoiler=addCarMesh(new THREE.BoxGeometry(1.8,.08,.35),darkMat,0,1.12,1.66);
 for(const x of [-.68,.68]){const support=addCarMesh(new THREE.BoxGeometry(.07,.32,.08),rimMat,x,1.0,1.62)}
 for(const x of [-1.02,1.02])for(const z of [-1.25,1.25]){
- const pivot=new THREE.Group();pivot.position.set(x,.47,z);car.add(pivot);
+ const pivot=new THREE.Group();pivot.position.set(x,.47,z);carBody.add(pivot);
  const tire=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,.29,32),tireMat);tire.rotation.z=Math.PI/2;tire.castShadow=true;pivot.add(tire);
  const rim=new THREE.Mesh(new THREE.CylinderGeometry(.29,.29,.305,32),rimMat);rim.rotation.z=Math.PI/2;pivot.add(rim);
  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.32,20),darkMat);hub.rotation.z=Math.PI/2;pivot.add(hub);
@@ -153,9 +153,18 @@ function update(dt){
  for(const b of buildingColliders){if(Math.abs(car.position.x-b.x)<b.hx&&Math.abs(car.position.z-b.z)<b.hz){hit=b;break}}
  if(hit){
   const dx=Math.abs(car.position.x-hit.x),dz=Math.abs(car.position.z-hit.z);
-  if(dx/hit.hx>dz/hit.hz)car.position.x=previous.x;else car.position.z=previous.z;
+  if(dx/hit.hx>dz/hit.hz){car.position.x=previous.x;rollVelZ+=(car.position.x>hit.x?1:-1)*Math.min(2.8,Math.abs(speed)*.075)}
+  else{car.position.z=previous.z;rollVelX+=(car.position.z>hit.z?1:-1)*Math.min(2.8,Math.abs(speed)*.075)}
+  if(Math.abs(speed)>13){rollVelZ+=(Math.random()-.5)*.9;rollVelX+=(Math.random()-.5)*.9}
   speed*= -.12;slip*=.25;
  }
+ // Only the vehicle body rolls; the chase camera remains level and never rotates with it.
+ rollVelX-=Math.sin(rollX)*13*dt;rollVelZ-=Math.sin(rollZ)*13*dt;
+ rollX+=rollVelX*dt;rollZ+=rollVelZ*dt;
+ rollVelX*=Math.exp(-1.15*dt);rollVelZ*=Math.exp(-1.15*dt);
+ if(Math.abs(rollX)<.012&&Math.abs(rollVelX)<.025){rollX=0;rollVelX=0}
+ if(Math.abs(rollZ)<.012&&Math.abs(rollVelZ)<.025){rollZ=0;rollVelZ=0}
+ carBody.rotation.set(rollX,0,rollZ);
  for(const w of wheelParts){w.tire.rotation.x-=speed*dt/.43;w.rim.rotation.x-=speed*dt/.43;if(w.front)w.pivot.rotation.y=THREE.MathUtils.damp(w.pivot.rotation.y,steer*.43,9,dt)}
  const drifting=hand&&Math.abs(speed)>7&&Math.abs(steer)>.05;
  if(drifting){drift+=Math.abs(speed)*dt*2.2;driftTimer=.3;$('drift').style.opacity=1}else{driftTimer=Math.max(0,driftTimer-dt);if(driftTimer===0)$('drift').style.opacity=0}
