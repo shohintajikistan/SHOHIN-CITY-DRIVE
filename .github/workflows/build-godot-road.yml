@@ -27,6 +27,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Prepare export directory
         run: mkdir -p site
+      - name: Install Godot 4.4.1 Web export templates
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz -O /tmp/godot-templates.tpz
+          mkdir -p /tmp/godot-templates
+          unzip -q /tmp/godot-templates.tpz -d /tmp/godot-templates
+          mkdir -p /github/home/.local/share/godot/export_templates/4.4.1.stable
+          cp /tmp/godot-templates/templates/web_nothreads_debug.zip /github/home/.local/share/godot/export_templates/4.4.1.stable/
+          cp /tmp/godot-templates/templates/web_nothreads_release.zip /github/home/.local/share/godot/export_templates/4.4.1.stable/
       - name: Import Godot project
         run: godot --headless --path godot --editor --quit
       - name: Export Godot Web build
